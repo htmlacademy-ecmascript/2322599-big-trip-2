@@ -1,17 +1,12 @@
 import { getRandomInteger, getRandomArrayElement } from '../utils.js';
 import { DESCRIPTIONS_DESTINATION, NAME_DESTINATION, MAX_COUNT } from '../const.js';
 
-const MockDestinations = [
+const mockDestinations = [
   {
     id: 111,
     description: getRandomArrayElement(DESCRIPTIONS_DESTINATION),
     name: getRandomArrayElement(NAME_DESTINATION),
-    pictures: [
-      {
-        src: `https://loremflickr.com/248/152?random=${getRandomInteger(0, MAX_COUNT)}`,
-        description: getRandomArrayElement(DESCRIPTIONS_DESTINATION),
-      }
-    ]
+    pictures: []
   },
 
   {
@@ -19,6 +14,10 @@ const MockDestinations = [
     description: getRandomArrayElement(DESCRIPTIONS_DESTINATION),
     name: getRandomArrayElement(NAME_DESTINATION),
     pictures: [
+      {
+        src: `https://loremflickr.com/248/152?random=${getRandomInteger(0, MAX_COUNT)}`,
+        description: getRandomArrayElement(DESCRIPTIONS_DESTINATION),
+      },
       {
         src: `https://loremflickr.com/248/152?random=${getRandomInteger(0, MAX_COUNT)}`,
         description: getRandomArrayElement(DESCRIPTIONS_DESTINATION),
@@ -34,6 +33,14 @@ const MockDestinations = [
       {
         src: `https://loremflickr.com/248/152?random=${getRandomInteger(0, MAX_COUNT)}`,
         description: getRandomArrayElement(DESCRIPTIONS_DESTINATION),
+      },
+      {
+        src: `https://loremflickr.com/248/152?random=${getRandomInteger(0, MAX_COUNT)}`,
+        description: getRandomArrayElement(DESCRIPTIONS_DESTINATION),
+      },
+      {
+        src: `https://loremflickr.com/248/152?random=${getRandomInteger(0, MAX_COUNT)}`,
+        description: getRandomArrayElement(DESCRIPTIONS_DESTINATION),
       }
     ]
   },
@@ -43,6 +50,18 @@ const MockDestinations = [
     description: getRandomArrayElement(DESCRIPTIONS_DESTINATION),
     name: getRandomArrayElement(NAME_DESTINATION),
     pictures: [
+      {
+        src: `https://loremflickr.com/248/152?random=${getRandomInteger(0, MAX_COUNT)}`,
+        description: getRandomArrayElement(DESCRIPTIONS_DESTINATION),
+      },
+      {
+        src: `https://loremflickr.com/248/152?random=${getRandomInteger(0, MAX_COUNT)}`,
+        description: getRandomArrayElement(DESCRIPTIONS_DESTINATION),
+      },
+      {
+        src: `https://loremflickr.com/248/152?random=${getRandomInteger(0, MAX_COUNT)}`,
+        description: getRandomArrayElement(DESCRIPTIONS_DESTINATION),
+      },
       {
         src: `https://loremflickr.com/248/152?random=${getRandomInteger(0, MAX_COUNT)}`,
         description: getRandomArrayElement(DESCRIPTIONS_DESTINATION),
@@ -63,4 +82,4 @@ const MockDestinations = [
   },
 ];
 
-export { MockDestinations };
+export { mockDestinations };

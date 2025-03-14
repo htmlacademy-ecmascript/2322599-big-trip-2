@@ -1,19 +1,7 @@
 const mockOffers = [
   {
     type: 'taxi',
-    offers: [
-      {
-        id: 11,
-        title: 'Select a driver',
-        price: 100,
-      },
-
-      {
-        id: 12,
-        title: 'Pre-book a taxi',
-        price: 50,
-      },
-    ]
+    offers: []
   },
 
   {

@@ -8,7 +8,7 @@ const mockPoints = [
     dateTo: '2025-01-10T13:00',
     destination: '111',
     isFavorite: true,
-    offers: [11, 12],
+    offers: [],
     type: 'taxi'
   },
 
