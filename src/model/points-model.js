@@ -26,7 +26,6 @@ export default class PointsModel {
   }
 
   getOffersByType(type) {
-    const offers = this.offers.find((offer) => offer.type === type);
-    return offers ? offers.offers : [];
+    return this.offers.find((offer) => offer.type === type);
   }
 }

@@ -1,36 +1,48 @@
 import { createElement } from '../render.js';
+import { formatDate } from '../utils.js';
 
-function createPointTemplate() {
+const MILLISECONDS_IN_SECOND = 1000;
+const SECONDS_IN_MINUTE = 60;
+const MINUTES_IN_HOUR = 60;
+
+
+function createPointTemplate(point, destination, offers) {
+  const { dateFrom, dateTo, basePrice, type } = point;
+
+  const formattedStartDate = formatDate(dateFrom, 'alt');
+  const formattedStartTime = formatDate(dateFrom, 'time');
+  const formattedEndTime = formatDate(dateTo, 'time');
+  const duration = Math.ceil((new Date(dateTo) - new Date(dateFrom)) / (MILLISECONDS_IN_SECOND * SECONDS_IN_MINUTE));
+
+  const offersList = (offers || []).map((offer) =>
+    `<li class="event__offer">
+      <span class="event__offer-title">${offer.title}</span>
+      &plus;&euro;&nbsp;
+      <span class="event__offer-price">${offer.price}</span>
+    </li>`
+  ).join('');
+
   return `<li class="trip-events__item">
               <div class="event">
-                <time class="event__date" datetime="2019-03-18">MAR 18</time>
+                <time class="event__date" datetime="${new Date(dateFrom).toISOString()}">${formattedStartDate}</time>
                 <div class="event__type">
-                  <img class="event__type-icon" width="42" height="42" src="img/icons/flight.png" alt="Event type icon">
+                  <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
                 </div>
-                <h3 class="event__title">Flight Chamonix</h3>
+                <h3 class="event__title">${type.charAt(0).toUpperCase() + type.slice(1)} ${destination.name}</h3>
                 <div class="event__schedule">
                   <p class="event__time">
-                    <time class="event__start-time" datetime="2019-03-18T12:25">12:25</time>
+                  <time class="event__start-time" datetime="${new Date(dateFrom).toISOString()}">${formattedStartTime}</time>
                     &mdash;
-                    <time class="event__end-time" datetime="2019-03-18T13:35">13:35</time>
+                    <time class="event__end-time" datetime="${new Date(dateTo).toISOString()}">${formattedEndTime}</time>
                   </p>
-                  <p class="event__duration">01H 10M</p>
+                  <p class="event__duration">${Math.floor(duration / MINUTES_IN_HOUR)}H ${duration % MINUTES_IN_HOUR}M</p>
                 </div>
                 <p class="event__price">
-                  &euro;&nbsp;<span class="event__price-value">160</span>
+                &euro;&nbsp;<span class="event__price-value">${basePrice}</span>
                 </p>
                 <h4 class="visually-hidden">Offers:</h4>
                 <ul class="event__selected-offers">
-                  <li class="event__offer">
-                    <span class="event__offer-title">Add luggage</span>
-                    &plus;&euro;&nbsp;
-                    <span class="event__offer-price">50</span>
-                  </li>
-                  <li class="event__offer">
-                    <span class="event__offer-title">Switch to comfort</span>
-                    &plus;&euro;&nbsp;
-                    <span class="event__offer-price">80</span>
-                  </li>
+                  ${offersList}
                 </ul>
                 <button class="event__favorite-btn" type="button">
                   <span class="visually-hidden">Add to favorite</span>
@@ -46,8 +58,15 @@ function createPointTemplate() {
 }
 
 export default class PointView {
+  constructor(point, destination, offers) {
+    this.point = point;
+    this.destination = destination;
+    this.offers = offers;
+    this.element = null;
+  }
+
   getTemplate() {
-    return createPointTemplate();
+    return createPointTemplate(this.point, this.destination, this.offers);
   }
 
   getElement() {

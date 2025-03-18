@@ -9,18 +9,24 @@ export default class BoardPresenter {
   boardComponent = new SortView();
   eventListComponent = new EventListView();
 
-  constructor({ boardContainer }) {
+  constructor({ boardContainer, pointsModel }) {
     this.boardContainer = boardContainer;
+    this.pointsModel = pointsModel;
   }
 
   init() {
+    this.points = [...this.pointsModel.getPoints()];
     render(this.boardComponent, this.boardContainer);
     render(new EditPointView(), this.boardComponent.getElement());
     render(new AddNewPointView(), this.boardComponent.getElement());
     render(this.eventListComponent, this.boardComponent.getElement());
 
-    for (let i = 0; i < 3; i++) {
-      render(new PointView(), this.eventListComponent.getElement());
+    for (const point of this.points) {
+      const offers = this.pointsModel.getOffersByType(point.type);
+      const destination = this.pointsModel.getDestinationById(point.id);
+
+      const pointView = new PointView(point, offers, destination);
+      render(pointView, this.eventListComponent.getElement());
     }
   }
 }
