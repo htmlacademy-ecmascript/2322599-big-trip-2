@@ -6,7 +6,7 @@ import EventListView from '../view/event-list-view.js';
 import { render } from '../render.js';
 
 export default class BoardPresenter {
-  boardComponent = new SortView();
+  SortComponent = new SortView();
   eventListComponent = new EventListView();
 
   constructor({ boardContainer, pointsModel }) {
@@ -16,12 +16,13 @@ export default class BoardPresenter {
 
   init() {
     this.points = [...this.pointsModel.getPoints()];
-    render(this.boardComponent, this.boardContainer);
-    render(new EditPointView(), this.boardComponent.getElement());
-    render(new AddNewPointView(), this.boardComponent.getElement());
-    render(this.eventListComponent, this.boardComponent.getElement());
+    render(this.SortComponent, this.boardContainer);
+    render(new EditPointView(), this.eventListComponent.getElement());
+    render(new AddNewPointView(), this.eventListComponent.getElement());
+    render(this.eventListComponent, this.boardContainer);
 
-    for (const point of this.points) {
+    for (let i = 0; i < this.points.length; i++) {
+      const point = this.points[i];
       const offers = this.pointsModel.getOffersByType(point.type);
       const destination = this.pointsModel.getDestinationById(point.id);
 

@@ -3,6 +3,7 @@ import dayjs from 'dayjs';
 const DATE_FORMAT = 'DD/MM/YY';
 const TIME_FORMAT = 'HH:mm';
 const ALT_DATE_FORMAT = 'MMM DD';
+const MINUTES_IN_HOUR = 60;
 
 function formatDate(date, formatType = 'default') {
   if (!date) {
@@ -21,6 +22,19 @@ function formatDate(date, formatType = 'default') {
   }
 }
 
+const calculateDuration = (dateFrom, dateTo) => {
+  const start = dayjs(dateFrom);
+  const end = dayjs(dateTo);
+
+  const durationInMinutes = end.diff(start, 'minute');
+
+  const hours = Math.floor(durationInMinutes / MINUTES_IN_HOUR);
+  const minutes = durationInMinutes % MINUTES_IN_HOUR;
+
+  return { hours, minutes };
+};
+
+
 const getRandomInteger = (min, max) => {
   const lower = Math.ceil(Math.min(min, max));
   const upper = Math.floor(Math.max(min, max));
@@ -30,4 +44,4 @@ const getRandomInteger = (min, max) => {
 
 const getRandomArrayElement = (elements) => elements[Math.floor(Math.random() * elements.length)];
 
-export { getRandomInteger, getRandomArrayElement, formatDate };
+export { getRandomInteger, getRandomArrayElement, formatDate, calculateDuration };

@@ -1,26 +1,33 @@
 import { createElement } from '../render.js';
-import { formatDate } from '../utils.js';
-
-const MILLISECONDS_IN_SECOND = 1000;
-const SECONDS_IN_MINUTE = 60;
-const MINUTES_IN_HOUR = 60;
-
+import { formatDate, calculateDuration } from '../utils.js';
 
 function createPointTemplate(point, destination, offers) {
-  const { dateFrom, dateTo, basePrice, type } = point;
+  const { dateFrom, dateTo, basePrice, type, isFavorite } = point;
 
   const formattedStartDate = formatDate(dateFrom, 'alt');
   const formattedStartTime = formatDate(dateFrom, 'time');
   const formattedEndTime = formatDate(dateTo, 'time');
-  const duration = Math.ceil((new Date(dateTo) - new Date(dateFrom)) / (MILLISECONDS_IN_SECOND * SECONDS_IN_MINUTE));
+  const { hours, minutes } = calculateDuration(dateFrom, dateTo);
 
-  const offersList = (offers || []).map((offer) =>
-    `<li class="event__offer">
-      <span class="event__offer-title">${offer.title}</span>
-      &plus;&euro;&nbsp;
-      <span class="event__offer-price">${offer.price}</span>
-    </li>`
-  ).join('');
+  const favoriteClassName = isFavorite
+    ? 'event__favorite-btn--active'
+    : '';
+
+  function createOffersTemplate(offersList) {
+    if (!offersList || offersList.length === 0) {
+      return '';
+    }
+
+    return offersList.map((offer) =>
+      `<li class="event__offer">
+          <span class="event__offer-title">${offer.title}</span>
+          &plus;&euro;&nbsp;
+          <span class="event__offer-price">${offer.price}</span>
+        </li>`
+    ).join('');
+  }
+
+  const offersTemplate = createOffersTemplate(offers);
 
   return `<li class="trip-events__item">
               <div class="event">
@@ -35,16 +42,16 @@ function createPointTemplate(point, destination, offers) {
                     &mdash;
                     <time class="event__end-time" datetime="${new Date(dateTo).toISOString()}">${formattedEndTime}</time>
                   </p>
-                  <p class="event__duration">${Math.floor(duration / MINUTES_IN_HOUR)}H ${duration % MINUTES_IN_HOUR}M</p>
+                  <p class="event__duration">${hours}H ${minutes}M</p>
                 </div>
                 <p class="event__price">
                 &euro;&nbsp;<span class="event__price-value">${basePrice}</span>
                 </p>
                 <h4 class="visually-hidden">Offers:</h4>
                 <ul class="event__selected-offers">
-                  ${offersList}
+                  ${offersTemplate}
                 </ul>
-                <button class="event__favorite-btn" type="button">
+                <button class="event__favorite-btn ${favoriteClassName}" type="button">
                   <span class="visually-hidden">Add to favorite</span>
                   <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
                     <path d="M14 21l-8.22899 4.3262 1.57159-9.1631L.685209 9.67376 9.8855 8.33688 14 0l4.1145 8.33688 9.2003 1.33688-6.6574 6.48934 1.5716 9.1631L14 21z"/>
@@ -62,7 +69,6 @@ export default class PointView {
     this.point = point;
     this.destination = destination;
     this.offers = offers;
-    this.element = null;
   }
 
   getTemplate() {
