@@ -1,8 +1,30 @@
 import { createElement } from '../render.js';
 import { formatDate, calculateDuration } from '../utils.js';
 
-function createPointTemplate(point, destination, offers) {
-  const { dateFrom, dateTo, basePrice, type, isFavorite } = point;
+function createOffersTemplate(offersList, offers) {
+  if (!offersList.offers) {
+    return '';
+  }
+
+  const availableOffers = [];
+
+  offersList.offers.forEach((offer) => {
+    if (offers.includes(offer.id)) {
+      availableOffers.push(offer);
+    }
+  });
+
+  return availableOffers.map(({ title, price }) => (
+    `<li class="event__offer">
+      <span class="event__offer-title">${title}</span>
+      &plus;&euro;&nbsp;
+      <span class="event__offer-price">${price}</span>
+    </li>`
+  )).join('');
+}
+
+function createPointTemplate(point, destination, offersList) {
+  const { dateFrom, dateTo, basePrice, type, isFavorite, offers } = point;
 
   const formattedStartDate = formatDate(dateFrom, 'alt');
   const formattedStartTime = formatDate(dateFrom, 'time');
@@ -12,22 +34,6 @@ function createPointTemplate(point, destination, offers) {
   const favoriteClassName = isFavorite
     ? 'event__favorite-btn--active'
     : '';
-
-  function createOffersTemplate(offersList) {
-    if (!offersList || offersList.length === 0) {
-      return '';
-    }
-
-    return offersList.map((offer) =>
-      `<li class="event__offer">
-          <span class="event__offer-title">${offer.title}</span>
-          &plus;&euro;&nbsp;
-          <span class="event__offer-price">${offer.price}</span>
-        </li>`
-    ).join('');
-  }
-
-  const offersTemplate = createOffersTemplate(offers);
 
   return `<li class="trip-events__item">
               <div class="event">
@@ -49,7 +55,7 @@ function createPointTemplate(point, destination, offers) {
                 </p>
                 <h4 class="visually-hidden">Offers:</h4>
                 <ul class="event__selected-offers">
-                  ${offersTemplate}
+                ${createOffersTemplate(offersList, offers)}
                 </ul>
                 <button class="event__favorite-btn ${favoriteClassName}" type="button">
                   <span class="visually-hidden">Add to favorite</span>
@@ -65,14 +71,14 @@ function createPointTemplate(point, destination, offers) {
 }
 
 export default class PointView {
-  constructor(point, destination, offers) {
+  constructor({ point, destination, offers }) {
     this.point = point;
     this.destination = destination;
-    this.offers = offers;
+    this.offersList = offers;
   }
 
   getTemplate() {
-    return createPointTemplate(this.point, this.destination, this.offers);
+    return createPointTemplate(this.point, this.destination, this.offersList);
   }
 
   getElement() {
