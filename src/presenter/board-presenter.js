@@ -14,7 +14,11 @@ export default class BoardPresenter {
 
   init() {
     this.points = [...this.pointsModel.getPoints()];
-    render(new EditPointView(), this.eventListComponent.getElement());
+    render(new EditPointView({
+      point: this.points[0],
+      offers: this.pointsModel.getOffersByType(this.points[0].type),
+      destination: this.pointsModel.getDestinationById(this.points[0].destination)
+    }), this.eventListComponent.getElement());
     render(new AddNewPointView(), this.eventListComponent.getElement());
     render(this.eventListComponent, this.boardContainer);
 

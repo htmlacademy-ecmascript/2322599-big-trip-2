@@ -16,4 +16,15 @@ const DESCRIPTIONS_DESTINATION = [
 
 const NAME_DESTINATION = ['Moscow', 'Rostov-on-Don', 'Irkutsk', 'Sochi', 'Krasnodar', 'Kaliningrad'];
 
-export { DESCRIPTIONS_DESTINATION, NAME_DESTINATION, MAX_COUNT };
+const EVENT_TYPES = [
+  { type: 'taxi', label: 'Taxi' },
+  { type: 'bus', label: 'Bus' },
+  { type: 'train', label: 'Train' },
+  { type: 'ship', label: 'Ship' },
+  { type: 'drive', label: 'Drive' },
+  { type: 'flight', label: 'Flight', checked: true },
+  { type: 'check-in', label: 'Check-in' },
+  { type: 'sightseeing', label: 'Sightseeing' },
+];
+
+export { DESCRIPTIONS_DESTINATION, NAME_DESTINATION, MAX_COUNT, EVENT_TYPES };
