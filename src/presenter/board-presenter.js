@@ -19,7 +19,11 @@ export default class BoardPresenter {
       offers: this.pointsModel.getOffersByType(this.points[0].type),
       destination: this.pointsModel.getDestinationById(this.points[0].destination)
     }), this.eventListComponent.getElement());
-    render(new AddNewPointView(), this.eventListComponent.getElement());
+    render(new AddNewPointView({
+      point: this.points[1],
+      offers: this.pointsModel.getOffersByType(this.points[1].type),
+      destination: this.pointsModel.getDestinationById(this.points[1].destination)
+    }), this.eventListComponent.getElement());
     render(this.eventListComponent, this.boardContainer);
 
     for (let i = 0; i < this.points.length; i++) {
