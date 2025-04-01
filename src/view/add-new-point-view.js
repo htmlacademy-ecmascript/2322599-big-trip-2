@@ -1,5 +1,5 @@
-import { createElement } from '../render.js';
 import { EVENT_TYPES } from '../const.js';
+import AbstractView from '../framework/view/abstract-view.js';
 
 function createOffersTemplate(offersList, offers) {
   if (!offersList.offers) {
@@ -127,26 +127,18 @@ const createAddNewPointTemplate = (point, destination, offersList) => {
   </li>`;
 };
 
-export default class AddNewPointView {
+export default class AddNewPointView extends AbstractView {
+  #point = null;
+  #destination = null;
+  #offersList = null;
   constructor({ point, destination, offers }) {
-    this.point = point;
-    this.destination = destination;
-    this.offersList = offers;
+    super();
+    this.#point = point;
+    this.#destination = destination;
+    this.#offersList = offers;
   }
 
-  getTemplate() {
-    return createAddNewPointTemplate(this.point, this.destination, this.offersList);
-  }
-
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
+  get template() {
+    return createAddNewPointTemplate(this.#point, this.#destination, this.#offersList);
   }
 }
