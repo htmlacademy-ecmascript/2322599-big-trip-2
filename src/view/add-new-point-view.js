@@ -37,16 +37,21 @@ function createDestinationTemplate(destination) {
     return '';
   }
 
-  const picturesTemplate = destination.pictures && destination.pictures.length > 0
-    ? destination.pictures.map((picture) => `<img class="event__photo" src="${picture.src}" alt="${picture.description}">`).join('')
-    : '';
+  const description = `<p class="event__destination-description">${destination.description}</p>`;
 
-  return `<p class="event__destination-description">${destination.description}</p>
-          <div class="event__photos-container">
-            <div class="event__photos-tape">
-              ${picturesTemplate}
-            </div>
-          </div>`;
+  let picturesTemplate = '';
+  if (destination.pictures && destination.pictures.length > 0) {
+    const pictures = destination.pictures.map((picture) =>
+      `<img class="event__photo" src="${picture.src}" alt="${picture.description}">`
+    );
+    picturesTemplate = `<div class="event__photos-container">
+                          <div class="event__photos-tape">
+                            ${pictures.join('')}
+                          </div>
+                        </div>`;
+  }
+
+  return description + (picturesTemplate ? picturesTemplate : '');
 }
 
 function createEventTypeItems() {
