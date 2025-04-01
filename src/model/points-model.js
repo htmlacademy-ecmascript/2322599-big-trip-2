@@ -5,27 +5,27 @@ import { mockOffers } from '../mock/offers.js';
 const POINTS_COUNT = 5;
 
 export default class PointsModel {
-  destinations = mockDestinations;
-  offers = mockOffers;
-  points = Array.from({ length: POINTS_COUNT }, getRandomMockPoints);
+  #destinations = mockDestinations;
+  #offers = mockOffers;
+  #points = Array.from({ length: POINTS_COUNT }, getRandomMockPoints);
 
-  getDestinations() {
-    return this.destinations;
+  get destinations() {
+    return this.#destinations;
   }
 
   getDestinationById(id) {
-    return this.destinations.find((destination) => destination.id === id);
+    return this.#destinations.find((destination) => destination.id === id);
   }
 
-  getOffers() {
-    return this.offers;
+  get offers() {
+    return this.#offers;
   }
 
   getOffersByType(type) {
-    return this.offers.find((offer) => offer.type === type);
+    return this.#offers.find((offer) => offer.type === type);
   }
 
-  getPoints() {
-    return this.points;
+  get points() {
+    return this.#points;
   }
 }
