@@ -19,16 +19,13 @@ export default class BoardPresenter {
 
   init() {
     this.#points = [...this.#pointsModel.points];
-    render(new EditPointView({
-      point: this.#points[0],
-      offers: this.#pointsModel.getOffersByType(this.#points[0].type),
-      destination: this.#pointsModel.getDestinationById(this.#points[0].destination)
-    }), this.eventListComponent.element);
+
     render(new AddNewPointView({
       point: this.#points[1],
       offers: this.#pointsModel.getOffersByType(this.#points[1].type),
       destination: this.#pointsModel.getDestinationById(this.#points[1].destination)
     }), this.eventListComponent.element);
+
     render(this.eventListComponent, this.#boardContainer);
 
     for (let i = 0; i < this.#points.length; i++) {
@@ -39,7 +36,19 @@ export default class BoardPresenter {
   #renderPoint(point) {
     const offers = this.#pointsModel.getOffersByType(point.type);
     const destination = this.#pointsModel.getDestinationById(point.destination);
-    const pointComponent = new PointView({ point, offers, destination });
+    const pointComponent = new PointView({
+      point, offers, destination,
+      onButtonClick: () => this.#handleEditButtonClick(point)
+    });
     render(pointComponent, this.eventListComponent.element);
+  }
+
+  #handleEditButtonClick(point) {
+    const editPointComponent = new EditPointView({
+      point: point,
+      offers: this.#pointsModel.getOffersByType(point.type),
+      destination: this.#pointsModel.getDestinationById(point.destination)
+    });
+    render(editPointComponent, this.eventListComponent.element);
   }
 }
