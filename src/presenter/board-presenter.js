@@ -3,6 +3,7 @@ import AddNewPointView from '../view/add-new-point-view.js';
 import EditPointView from '../view/edit-point-view.js';
 import PointView from '../view/point-view.js';
 import EventListView from '../view/event-list-view.js';
+import NoPointView from '../view/no-point-view.js';
 
 export default class BoardPresenter {
   #boardContainer = null;
@@ -10,7 +11,7 @@ export default class BoardPresenter {
 
   #points = [];
 
-  eventListComponent = new EventListView();
+  #eventListComponent = new EventListView();
 
   constructor({ boardContainer, pointsModel }) {
     this.#boardContainer = boardContainer;
@@ -63,7 +64,8 @@ export default class BoardPresenter {
     function replaceEditFormToPoint() {
       replace(pointComponent, editPointComponent);
     }
-    render(pointComponent, this.eventListComponent.element);
+
+    render(pointComponent, this.#eventListComponent.element);
   }
 
   #renderBoard() {
@@ -71,12 +73,17 @@ export default class BoardPresenter {
       point: this.#points[1],
       offers: this.#pointsModel.getOffersByType(this.#points[1].type),
       destination: this.#pointsModel.getDestinationById(this.#points[1].destination)
-    }), this.eventListComponent.element);
+    }), this.#eventListComponent.element);
 
-    render(this.eventListComponent, this.#boardContainer);
+    render(this.#eventListComponent, this.#boardContainer);
 
+    if (this.#points.length === 0) {
+      render(new NoPointView(), this.#eventListComponent.element);
+      return;
+    }
     for (let i = 0; i < this.#points.length; i++) {
       this.#renderPoint(this.#points[i]);
     }
+
   }
 }
