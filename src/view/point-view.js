@@ -1,4 +1,4 @@
-import { formatDate, calculateDuration } from '../utils.js';
+import { formatDate, calculateDuration } from '../utils/utils.js';
 import AbstractView from '../framework/view/abstract-view.js';
 
 function createOffersTemplate(offersList, offers) {
