@@ -1,4 +1,4 @@
-import { render } from '../framework/render.js';
+import { render, replace } from '../framework/render.js';
 import AddNewPointView from '../view/add-new-point-view.js';
 import EditPointView from '../view/edit-point-view.js';
 import PointView from '../view/point-view.js';
@@ -34,21 +34,45 @@ export default class BoardPresenter {
   }
 
   #renderPoint(point) {
+    const escKeyDownHandler = (evt) => {
+      if (evt.key === 'Escape') {
+        evt.preventDefault();
+        replaceEditFormToPoint();
+        document.removeEventListener('keydown', escKeyDownHandler);
+      }
+    };
+
     const offers = this.#pointsModel.getOffersByType(point.type);
     const destination = this.#pointsModel.getDestinationById(point.destination);
     const pointComponent = new PointView({
       point, offers, destination,
-      onButtonClick: () => this.#handleEditButtonClick(point)
+      onButtonClick: () => {
+        replacePointToEditForm();
+        document.addEventListener('keydown', escKeyDownHandler);
+      }
     });
-    render(pointComponent, this.eventListComponent.element);
-  }
 
-  #handleEditButtonClick(point) {
     const editPointComponent = new EditPointView({
       point: point,
       offers: this.#pointsModel.getOffersByType(point.type),
-      destination: this.#pointsModel.getDestinationById(point.destination)
+      destination: this.#pointsModel.getDestinationById(point.destination),
+      onFormSubmit: () => {
+        replaceEditFormToPoint();
+        document.removeEventListener('keydown', escKeyDownHandler);
+      },
+      onButtonClick: () => {
+        replaceEditFormToPoint();
+        document.addEventListener('keydown', escKeyDownHandler);
+      }
     });
-    render(editPointComponent, this.eventListComponent.element);
+
+    function replacePointToEditForm() {
+      replace(editPointComponent, pointComponent);
+    }
+
+    function replaceEditFormToPoint() {
+      replace(pointComponent, editPointComponent);
+    }
+    render(pointComponent, this.eventListComponent.element);
   }
 }
