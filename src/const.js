@@ -27,4 +27,11 @@ const EVENT_TYPES = [
   { type: 'sightseeing', label: 'Sightseeing' },
 ];
 
-export { DESCRIPTIONS_DESTINATION, NAME_DESTINATION, MAX_COUNT, EVENT_TYPES };
+const FilterType = {
+  EVERYTHING: 'everything',
+  FUTURE: 'future',
+  PRESENT: 'present',
+  PAST: 'past'
+};
+
+export { DESCRIPTIONS_DESTINATION, NAME_DESTINATION, MAX_COUNT, EVENT_TYPES, FilterType };
