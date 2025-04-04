@@ -1,5 +1,4 @@
 import { render, replace } from '../framework/render.js';
-import AddNewPointView from '../view/add-new-point-view.js';
 import EditPointView from '../view/edit-point-view.js';
 import PointView from '../view/point-view.js';
 import EventListView from '../view/event-list-view.js';
@@ -69,12 +68,6 @@ export default class BoardPresenter {
   }
 
   #renderBoard() {
-    render(new AddNewPointView({
-      point: this.#points[1],
-      offers: this.#pointsModel.getOffersByType(this.#points[1].type),
-      destination: this.#pointsModel.getDestinationById(this.#points[1].destination)
-    }), this.#eventListComponent.element);
-
     render(this.#eventListComponent, this.#boardContainer);
 
     if (this.#points.length === 0) {
