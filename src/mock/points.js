@@ -15,8 +15,8 @@ const mockPoints = [
   {
     id: 2,
     basePrice: 1200,
-    dateFrom: '2025-01-10T14:00',
-    dateTo: '2025-01-10T20:00',
+    dateFrom: '2026-01-10T14:00',
+    dateTo: '2026-01-10T20:00',
     destination: 222,
     isFavorite: false,
     offers: [21, 22, 23],
@@ -26,8 +26,8 @@ const mockPoints = [
   {
     id: 3,
     basePrice: 1300,
-    dateFrom: '2025-01-10T22:00',
-    dateTo: '2025-01-11T12:00',
+    dateFrom: '2025-02-04T22:00',
+    dateTo: '2025-02-05T12:00',
     destination: 333,
     isFavorite: true,
     offers: [31, 32],
@@ -48,8 +48,8 @@ const mockPoints = [
   {
     id: 5,
     basePrice: 1100,
-    dateFrom: '2025-01-12T16:00',
-    dateTo: '2025-01-12T17:00',
+    dateFrom: '2025-04-04T16:00',
+    dateTo: '2025-04-04T17:00',
     destination: 555,
     isFavorite: true,
     offers: [51, 52, 53],
