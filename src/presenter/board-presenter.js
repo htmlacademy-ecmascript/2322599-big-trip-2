@@ -1,12 +1,15 @@
-import { render, replace } from '../framework/render.js';
+import { render, RenderPosition, replace } from '../framework/render.js';
 import EditPointView from '../view/edit-point-view.js';
 import PointView from '../view/point-view.js';
 import EventListView from '../view/event-list-view.js';
 import NoPointView from '../view/no-point-view.js';
+import SortView from '../view/sort-view.js';
 
 export default class BoardPresenter {
   #boardContainer = null;
   #pointsModel = null;
+  #sortComponent = new SortView();
+  #noPointComponent = new NoPointView();
 
   #points = [];
 
@@ -21,6 +24,10 @@ export default class BoardPresenter {
     this.#points = [...this.#pointsModel.points];
 
     this.#renderBoard();
+  }
+
+  #renderSort() {
+    render(this.#sortComponent, this.#eventListComponent.element, RenderPosition.AFTERBEGIN);
   }
 
   #renderPoint(point) {
@@ -67,16 +74,25 @@ export default class BoardPresenter {
     render(pointComponent, this.#eventListComponent.element);
   }
 
+  #renderPoints(from, to) {
+    this.#points
+      .slice(from, to)
+      .forEach((point) => this.#renderPoint(point));
+  }
+
+  #renderNoPoints() {
+    render(this.#noPointComponent, this.#eventListComponent.element, RenderPosition.AFTERBEGIN);
+  }
+
   #renderBoard() {
     render(this.#eventListComponent, this.#boardContainer);
 
     if (this.#points.length === 0) {
-      render(new NoPointView(), this.#eventListComponent.element);
+      this.#renderNoPoints();
       return;
     }
-    for (let i = 0; i < this.#points.length; i++) {
-      this.#renderPoint(this.#points[i]);
-    }
 
+    this.#renderSort();
+    this.#renderPoints();
   }
 }
