@@ -40,7 +40,8 @@ export default class BoardPresenter {
   #renderPoint(point) {
     const pointPresenter = new PointPresenter({
       eventListContainer: this.#eventListComponent.element,
-      pointsModel: this.#pointsModel
+      pointsModel: this.#pointsModel,
+      onDataChange: this.#handlePointChange
     });
 
     pointPresenter.init(point);
