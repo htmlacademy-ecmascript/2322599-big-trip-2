@@ -1,15 +1,19 @@
-import { render, replace } from '../framework/render.js';
-import AddNewPointView from '../view/add-new-point-view.js';
-import EditPointView from '../view/edit-point-view.js';
-import PointView from '../view/point-view.js';
+import { render, RenderPosition } from '../framework/render.js';
 import EventListView from '../view/event-list-view.js';
 import NoPointView from '../view/no-point-view.js';
+import SortView from '../view/sort-view.js';
+import PointPresenter from './point-presenter.js';
+import { updateItem } from '../utils/common.js';
 
 export default class BoardPresenter {
   #boardContainer = null;
   #pointsModel = null;
+  #sortComponent = new SortView();
+  #noPointComponent = new NoPointView();
 
   #points = [];
+
+  #pointPresenters = new Map();
 
   #eventListComponent = new EventListView();
 
@@ -24,66 +28,55 @@ export default class BoardPresenter {
     this.#renderBoard();
   }
 
+  #handleModeChange = () => {
+    this.#pointPresenters.forEach((presenter) => presenter.resetView());
+  };
+
+  #handlePointChange = (updatedPoint) => {
+    this.#points = updateItem(this.#points, updatedPoint);
+    this.#pointPresenters.get(updatedPoint.id).init(updatedPoint);
+  };
+
+  #renderSort() {
+    render(this.#sortComponent, this.#eventListComponent.element, RenderPosition.AFTERBEGIN);
+  }
+
   #renderPoint(point) {
-    const escKeyDownHandler = (evt) => {
-      if (evt.key === 'Escape') {
-        evt.preventDefault();
-        replaceEditFormToPoint();
-        document.removeEventListener('keydown', escKeyDownHandler);
-      }
-    };
-
-    const offers = this.#pointsModel.getOffersByType(point.type);
-    const destination = this.#pointsModel.getDestinationById(point.destination);
-    const pointComponent = new PointView({
-      point, offers, destination,
-      onButtonClick: () => {
-        replacePointToEditForm();
-        document.addEventListener('keydown', escKeyDownHandler);
-      }
+    const pointPresenter = new PointPresenter({
+      eventListContainer: this.#eventListComponent.element,
+      pointsModel: this.#pointsModel,
+      onDataChange: this.#handlePointChange,
+      onModeChange: this.#handleModeChange
     });
 
-    const editPointComponent = new EditPointView({
-      point: point,
-      offers: this.#pointsModel.getOffersByType(point.type),
-      destination: this.#pointsModel.getDestinationById(point.destination),
-      onFormSubmit: () => {
-        replaceEditFormToPoint();
-        document.removeEventListener('keydown', escKeyDownHandler);
-      },
-      onButtonClick: () => {
-        replaceEditFormToPoint();
-        document.addEventListener('keydown', escKeyDownHandler);
-      }
-    });
+    pointPresenter.init(point);
+    this.#pointPresenters.set(point.id, pointPresenter);
+  }
 
-    function replacePointToEditForm() {
-      replace(editPointComponent, pointComponent);
-    }
+  #renderPoints(from, to) {
+    this.#points
+      .slice(from, to)
+      .forEach((point) => this.#renderPoint(point));
+  }
 
-    function replaceEditFormToPoint() {
-      replace(pointComponent, editPointComponent);
-    }
+  #renderNoPoints() {
+    render(this.#noPointComponent, this.#eventListComponent.element, RenderPosition.AFTERBEGIN);
+  }
 
-    render(pointComponent, this.#eventListComponent.element);
+  #clearBoard() {
+    this.#pointPresenters.forEach((presenter) => presenter.destroy());
+    this.#pointPresenters.clear();
   }
 
   #renderBoard() {
-    render(new AddNewPointView({
-      point: this.#points[1],
-      offers: this.#pointsModel.getOffersByType(this.#points[1].type),
-      destination: this.#pointsModel.getDestinationById(this.#points[1].destination)
-    }), this.#eventListComponent.element);
-
     render(this.#eventListComponent, this.#boardContainer);
 
     if (this.#points.length === 0) {
-      render(new NoPointView(), this.#eventListComponent.element);
+      this.#renderNoPoints();
       return;
     }
-    for (let i = 0; i < this.#points.length; i++) {
-      this.#renderPoint(this.#points[i]);
-    }
 
+    this.#renderSort();
+    this.#renderPoints();
   }
 }

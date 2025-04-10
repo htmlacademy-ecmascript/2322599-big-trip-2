@@ -7,7 +7,22 @@ const POINTS_COUNT = 5;
 export default class PointsModel {
   #destinations = mockDestinations;
   #offers = mockOffers;
-  #points = Array.from({ length: POINTS_COUNT }, getRandomMockPoints);
+  #points = this.generateUniquePoints();
+
+  generateUniquePoints() {
+    const uniqueIds = new Set();
+    const points = [];
+
+    while (points.length < POINTS_COUNT) {
+      const mockPoint = getRandomMockPoints();
+      if (!uniqueIds.has(mockPoint.id)) {
+        uniqueIds.add(mockPoint.id);
+        points.push(mockPoint);
+      }
+    }
+
+    return points;
+  }
 
   get destinations() {
     return this.#destinations;
