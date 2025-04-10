@@ -34,4 +34,12 @@ const FilterType = {
   PAST: 'past'
 };
 
-export { DESCRIPTIONS_DESTINATION, NAME_DESTINATION, MAX_COUNT, EVENT_TYPES, FilterType };
+const SortType = {
+  DAY: 'day',
+  EVENT: 'event',
+  TIME: 'time',
+  PRICE: 'price',
+  OFFERS: 'offers'
+};
+
+export { DESCRIPTIONS_DESTINATION, NAME_DESTINATION, MAX_COUNT, EVENT_TYPES, FilterType, SortType };
