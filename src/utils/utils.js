@@ -46,66 +46,19 @@ function isPointFuture(dateFrom) {
   return dateFrom && dayjs(dateFrom).isAfter(dayjs(), 'minute');
 }
 
-function getWeightForNullDate(dateA, dateB) {
-  if (dateA === null && dateB === null) {
-    return 0;
-  }
-
-  if (dateA === null) {
-    return 1;
-  }
-
-  if (dateB === null) {
-    return -1;
-  }
-
-  return null;
+function sortByDay(taskA, taskB) {
+  return new Date(taskA.dateFrom) - new Date(taskB.dateFrom);
 }
 
-function sortByDay(pointA, pointB) {
-  const dateA = pointA.dateFrom;
-  const dateB = pointB.dateFrom;
-  const weight = getWeightForNullDate(dateA, dateB);
+function sortByTime(taskA, taskB) {
+  const durationA = new Date(taskA.dateTo) - new Date(taskA.dateFrom);
+  const durationB = new Date(taskB.dateTo) - new Date(taskB.dateFrom);
 
-  return weight;
+  return durationB - durationA;
 }
 
-const getDuration = (point) => {
-  const { startTime, endTime } = point;
-
-  if (!startTime || !endTime) {
-    return null;
-  }
-
-  return calculateDuration(startTime, endTime);
-};
-
-const sortByTime = (pointA, pointB) => {
-  const durationA = getDuration(pointA);
-  const durationB = getDuration(pointB);
-
-  if (durationA === null && durationB === null) {
-    return 0;
-  }
-  if (durationA === null) {
-    return 1;
-  }
-  if (durationB === null) {
-    return -1;
-  }
-
-  if (durationA.hours !== durationB.hours) {
-    return durationB.hours - durationA.hours;
-  }
-
-  return durationB.minutes - durationA.minutes;
-};
-
-function sortByPrice(pointA, pointB) {
-  const priceA = pointA.basePrice;
-  const priceB = pointB.basePrice;
-
-  return priceB - priceA;
+function sortByPrice(taskA, taskB) {
+  return taskB.basePrice - taskA.basePrice;
 }
 
 export { formatDate, calculateDuration, isPointPast, isPointPresent, isPointFuture, sortByDay, sortByTime, sortByPrice };

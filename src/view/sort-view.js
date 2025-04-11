@@ -45,11 +45,15 @@ export default class SortView extends AbstractView {
   }
 
   #sortTypeChangeHandler = (evt) => {
-    if (evt.target.tagName !== '.trip-sort__btn') {
+    const sortButton = evt.target.closest('.trip-sort__btn');
+    if (!sortButton) {
       return;
     }
 
-    evt.preventDefault();
-    this.#handleSortTypeChange(evt.target.dataset.sortType);
+    const sortInput = document.getElementById(sortButton.htmlFor);
+    if (sortInput && !sortInput.disabled) {
+      sortInput.checked = true;
+      this.#handleSortTypeChange(sortButton.dataset.sortType);
+    }
   };
 }
