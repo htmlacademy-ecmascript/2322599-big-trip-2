@@ -46,4 +46,65 @@ function isPointFuture(dateFrom) {
   return dateFrom && dayjs(dateFrom).isAfter(dayjs(), 'minute');
 }
 
-export { formatDate, calculateDuration, isPointPast, isPointPresent, isPointFuture };
+function getWeightForNullDate(dateA, dateB) {
+  if (dateA === null && dateB === null) {
+    return 0;
+  }
+
+  if (dateA === null) {
+    return 1;
+  }
+
+  if (dateB === null) {
+    return -1;
+  }
+
+  return null;
+}
+
+function sortByDay(pointA, pointB) {
+  const dateA = pointA.dateFrom;
+  const dateB = pointB.dateFrom;
+  const weight = getWeightForNullDate(dateA, dateB);
+
+  return weight;
+}
+
+const getDuration = (point) => {
+  const { startTime, endTime } = point;
+
+  if (!startTime || !endTime) {
+    return null; // Или можно вернуть { hours: 0, minutes: 0 }
+  }
+
+  return calculateDuration(startTime, endTime);
+};
+
+const sortByTime = (pointA, pointB) => {
+  const durationA = getDuration(pointA);
+  const durationB = getDuration(pointB);
+
+  if (durationA === null && durationB === null) {
+    return 0;
+  }
+  if (durationA === null) {
+    return 1;
+  }
+  if (durationB === null) {
+    return -1;
+  }
+
+  if (durationA.hours !== durationB.hours) {
+    return durationA.hours - durationB.hours;
+  }
+
+  return durationA.minutes - durationB.minutes;
+};
+
+function sortByPrice(pointA, pointB) {
+  const priceA = pointA.basePrice;
+  const priceB = pointB.basePrice;
+
+  return priceA - priceB;
+}
+export { formatDate, calculateDuration, isPointPast, isPointPresent, isPointFuture, sortByDay, sortByTime, sortByPrice };
