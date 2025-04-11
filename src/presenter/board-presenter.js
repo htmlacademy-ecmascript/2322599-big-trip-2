@@ -16,7 +16,7 @@ export default class BoardPresenter {
   #points = [];
 
   #pointPresenters = new Map();
-  #currentSortType = SortType.DEFAULT;
+  #currentSortType = SortType.DAY;
   #sourcedBoardPoints = [];
 
   #eventListComponent = new EventListView();
@@ -43,7 +43,7 @@ export default class BoardPresenter {
     this.#pointPresenters.get(updatedPoint.id).init(updatedPoint);
   };
 
-  #SortPoints(sortType) {
+  #sortPoints(sortType) {
     switch (sortType) {
       case SortType.DAY:
         this.#points.sort(sortByDay);
@@ -66,7 +66,10 @@ export default class BoardPresenter {
       return;
     }
 
-    this.#SortPoints(sortType);
+    this.#sortPoints(sortType);
+
+    this.#clearBoard();
+    this.#renderPoints(0, this.#points.length);
   };
 
   #renderSort() {

@@ -74,7 +74,7 @@ const getDuration = (point) => {
   const { startTime, endTime } = point;
 
   if (!startTime || !endTime) {
-    return null; // Или можно вернуть { hours: 0, minutes: 0 }
+    return null;
   }
 
   return calculateDuration(startTime, endTime);
@@ -95,16 +95,17 @@ const sortByTime = (pointA, pointB) => {
   }
 
   if (durationA.hours !== durationB.hours) {
-    return durationA.hours - durationB.hours;
+    return durationB.hours - durationA.hours;
   }
 
-  return durationA.minutes - durationB.minutes;
+  return durationB.minutes - durationA.minutes;
 };
 
 function sortByPrice(pointA, pointB) {
   const priceA = pointA.basePrice;
   const priceB = pointB.basePrice;
 
-  return priceA - priceB;
+  return priceB - priceA;
 }
+
 export { formatDate, calculateDuration, isPointPast, isPointPresent, isPointFuture, sortByDay, sortByTime, sortByPrice };
