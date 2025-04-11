@@ -46,4 +46,19 @@ function isPointFuture(dateFrom) {
   return dateFrom && dayjs(dateFrom).isAfter(dayjs(), 'minute');
 }
 
-export { formatDate, calculateDuration, isPointPast, isPointPresent, isPointFuture };
+function sortByDay(taskA, taskB) {
+  return new Date(taskA.dateFrom) - new Date(taskB.dateFrom);
+}
+
+function sortByTime(taskA, taskB) {
+  const durationA = new Date(taskA.dateTo) - new Date(taskA.dateFrom);
+  const durationB = new Date(taskB.dateTo) - new Date(taskB.dateFrom);
+
+  return durationB - durationA;
+}
+
+function sortByPrice(taskA, taskB) {
+  return taskB.basePrice - taskA.basePrice;
+}
+
+export { formatDate, calculateDuration, isPointPast, isPointPresent, isPointFuture, sortByDay, sortByTime, sortByPrice };
