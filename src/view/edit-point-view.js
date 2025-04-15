@@ -93,9 +93,11 @@ function createEditPointTemplate(point, destination, offersList) {
                     <label class="event__label  event__type-output" for="event-destination-1">
                       ${type}
                     </label>
-                    <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name}" list="destination-list-${destination.id}">
-                    <datalist id="destination-list-${destination.id}">
-                      <option value="${destination.name}"></option>
+                    <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name}" list="destination-list-1">
+                    <datalist id="destination-list-1">
+                      <option value="Moscow"></option>
+                      <option value="Krasnodar"></option>
+                      <option value="Sochi"></option>
                     </datalist>
                   </div>
 
@@ -157,6 +159,12 @@ export default class EditPointView extends AbstractStatefulView {
     return createEditPointTemplate(this._state, this.#destination, this.#offersList);
   }
 
+  reset(point) {
+    this.updateElement(
+      EditPointView.parsePointToState(point),
+    );
+  }
+
   _restoreHandlers() {
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#buttonClickHandler);
     this.element.querySelector('.event--edit').addEventListener('submit', this.#formSubmitHandler);
@@ -183,10 +191,8 @@ export default class EditPointView extends AbstractStatefulView {
 
   #destinationChangeHandler = (evt) => {
     evt.preventDefault();
-    const selectedDestination = evt.target.value;
-
-    this.updateElement({
-      selectedDestination: selectedDestination,
+    this._setState({
+      description: evt.target.value,
     });
   };
 
