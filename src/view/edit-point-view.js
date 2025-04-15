@@ -1,6 +1,6 @@
 import { EVENT_TYPES } from '../const.js';
 import { formatDate } from '../utils/utils.js';
-import AbstractView from '../framework/view/abstract-view.js';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 
 function createOffersTemplate(offersList, offers) {
   if (!offersList.offers) {
@@ -38,7 +38,21 @@ function createDestinationTemplate(destination) {
     return '';
   }
 
-  return `<p class="event__destination-description">${destination.description}</p>`;
+  const description = `<p class="event__destination-description">${destination.description}</p>`;
+
+  let picturesTemplate = '';
+  if (destination.pictures && destination.pictures.length > 0) {
+    const pictures = destination.pictures.map((picture) =>
+      `<img class="event__photo" src="${picture.src}" alt="${picture.description}">`
+    );
+    picturesTemplate = `<div class="event__photos-container">
+                          <div class="event__photos-tape">
+                            ${pictures.join('')}
+                          </div>
+                        </div>`;
+  }
+
+  return description + (picturesTemplate ? picturesTemplate : '');
 }
 
 function createEventTypeItems() {
@@ -122,7 +136,7 @@ function createEditPointTemplate(point, destination, offersList) {
   </li>`;
 }
 
-export default class EditPointView extends AbstractView {
+export default class EditPointView extends AbstractStatefulView {
   #point = null;
   #destination = null;
   #offersList = null;
@@ -131,7 +145,7 @@ export default class EditPointView extends AbstractView {
 
   constructor({ point, destination, offers, onButtonClick, onFormSubmit }) {
     super();
-    this.#point = point;
+    this._setState(EditPointView.parsePointToState(point));
     this.#destination = destination;
     this.#offersList = offers;
     this.#onButtonClick = onButtonClick;
@@ -142,17 +156,24 @@ export default class EditPointView extends AbstractView {
   }
 
   get template() {
-    return createEditPointTemplate(this.#point, this.#destination, this.#offersList);
+    return createEditPointTemplate(this._state, this.#destination, this.#offersList);
   }
 
   #buttonClickHandler = (evt) => {
     evt.preventDefault();
-    this.#onButtonClick(this.#point);
+    this.#onButtonClick(EditPointView.parseStateToPoint(this._state));
   };
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this.#onFormSubmit(this.#point);
+    this.#onFormSubmit(EditPointView.parseStateToPoint(this._state));
   };
 
+  static parsePointToState(point) {
+    return { ...point };
+  }
+
+  static parseStateToPoint(state) {
+    return { ...state };
+  }
 }
