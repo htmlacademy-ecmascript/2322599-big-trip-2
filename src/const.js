@@ -22,7 +22,7 @@ const EVENT_TYPES = [
   { type: 'train', label: 'Train' },
   { type: 'ship', label: 'Ship' },
   { type: 'drive', label: 'Drive' },
-  { type: 'flight', label: 'Flight', checked: true },
+  { type: 'flight', label: 'Flight' },
   { type: 'check-in', label: 'Check-in' },
   { type: 'sightseeing', label: 'Sightseeing' },
 ];

@@ -28,8 +28,15 @@ function createOffersTemplate(offersList, offers) {
 }
 
 function createOfferDetailsTemplate(offersList, offers) {
-  return `<div class="event__available-offers">
-  ${createOffersTemplate(offersList, offers)}
+  const offersMarkup = createOffersTemplate(offersList, offers);
+
+  if (!offersMarkup) {
+    return '';
+  }
+
+  return `<h3 class="event__section-title  event__section-title--offers">Offers</h3>
+  <div class="event__available-offers">
+  ${offersMarkup}
   </div>`;
 }
 
@@ -38,31 +45,29 @@ function createDestinationTemplate(destination) {
     return '';
   }
 
-  const description = `<p class="event__destination-description">${destination.description}</p>`;
+  const description = destination.description ?
+    `<h3 class="event__section-title event__section-title--destination">Destination</h3>
+    <p class="event__destination-description">${destination.description}</p>` : '';
 
-  let picturesTemplate = '';
-  if (destination.pictures && destination.pictures.length > 0) {
-    const pictures = destination.pictures.map((picture) =>
-      `<img class="event__photo" src="${picture.src}" alt="${picture.description}">`
-    );
-    picturesTemplate = `<div class="event__photos-container">
-                          <div class="event__photos-tape">
-                            ${pictures.join('')}
-                          </div>
-                        </div>`;
-  }
+  const pictures = (destination.pictures && destination.pictures.length > 0) ?
+    `<div class="event__photos-container">
+      <div class="event__photos-tape">
+        ${destination.pictures.map((picture) => `<img class="event__photo" src="${picture.src}" alt="${picture.description}">`).join('')}
+      </div>
+    </div>` : '';
 
-  return description + (picturesTemplate ? picturesTemplate : '');
+  return description + pictures;
 }
 
-function createEventTypeItems() {
-  return EVENT_TYPES.map(({ type, label, checked }) =>
+function createEventTypeItems(currentType) {
+  return EVENT_TYPES.map(({ type, label }) =>
     `<div class="event__type-item">
-      <input id="event-type-${type}-1" class="event__type-input visually-hidden" type="radio" name="event-type" value="${type}" ${checked ? 'checked' : ''}>
+      <input id="event-type-${type}-1" class="event__type-input visually-hidden" type="radio" name="event-type" value="${type}" ${type === currentType ? 'checked' : ''}>
       <label class="event__type-label event__type-label--${type}" for="event-type-${type}-1">${label}</label>
     </div>`
   ).join('');
 }
+
 
 function createEditPointTemplate(point, destination, offersList) {
   const { dateFrom, dateTo, offers, type, basePrice } = point;
@@ -78,14 +83,14 @@ function createEditPointTemplate(point, destination, offersList) {
                   <div class="event__type-wrapper">
                     <label class="event__type  event__type-btn" for="event-type-toggle-1">
                       <span class="visually-hidden">Choose event type</span>
-                      <img class="event__type-icon" width="17" height="17" src="img/icons/flight.png" alt="Event type icon">
+                      <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
                     </label>
                     <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
                     <div class="event__type-list">
                       <fieldset class="event__type-group">
                         <legend class="visually-hidden">Event type</legend>
-                        ${createEventTypeItems()}
+                        ${createEventTypeItems(type)}
                       </fieldset>
                     </div>
                   </div>
@@ -124,14 +129,11 @@ function createEditPointTemplate(point, destination, offersList) {
                 </header>
                 <section class="event__details">
               <section class="event__section  event__section--offers">
-                <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-             ${createOfferDetailsTemplate(offersList, offers)}
+              ${(offersList.offers && offersList.offers.some((offer) => offers.includes(offer.id))) ? createOfferDetailsTemplate(offersList, offers) : ''}
              </section>
             </section>
-
-          <section class="event__section  event__section--destination">
-          <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-          ${createDestinationTemplate(destination)}
+            <section class="event__section event__section--destination">
+          ${(destination.description || (destination.pictures && destination.pictures.length > 0)) ? createDestinationTemplate(destination) : ''}
           </section>
       </section>
       </form>
@@ -185,15 +187,54 @@ export default class EditPointView extends AbstractStatefulView {
   #typeToggleHandler = (evt) => {
     evt.preventDefault();
     const selectedType = evt.target.value;
-    this._state.eventType = selectedType;
-    this.updateElement(this._state);
+
+    const offersForType = this.#offersList.offers.find((offer) => offer.type === selectedType);
+
+    const offers = offersForType ? offersForType.offers : [];
+
+    this.updateElement({
+      eventType: selectedType,
+      offers: offers,
+    });
+
+    this.#updateEventType(selectedType);
+
+    this.#updateRadioButtons(selectedType);
   };
+
+  #updateEventType(type) {
+    const typeLabel = this.element.querySelector('.event__type-output');
+    const icon = this.element.querySelector('.event__type-icon');
+
+    if (typeLabel && icon) {
+      typeLabel.textContent = type;
+      icon.src = `img/icons/${type}.png`;
+    }
+  }
+
+  #updateRadioButtons(selectedType) {
+    const radioButtons = this.element.querySelectorAll('input[name="event-type"]');
+
+    radioButtons.forEach((radio) => {
+      radio.checked = (radio.value === selectedType);
+    });
+  }
 
   #destinationChangeHandler = (evt) => {
     evt.preventDefault();
-    this._setState({
-      description: evt.target.value,
-    });
+    const selectedDestination = evt.target.value;
+
+    const destinationData = this.#destination[selectedDestination];
+
+    if (destinationData) {
+      this._setState({
+        ...this._state,
+        description: destinationData.description,
+        photos: destinationData.photos,
+      });
+
+      this.updateElement(this._state);
+    }
   };
 
   static parsePointToState(point) {
