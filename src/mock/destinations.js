@@ -80,6 +80,70 @@ const mockDestinations = [
       }
     ]
   },
+
+  {
+    id: 666,
+    description: getRandomArrayElement(DESCRIPTIONS_DESTINATION),
+    name: getRandomArrayElement(NAME_DESTINATION),
+    pictures: [
+      {
+        src: `https://loremflickr.com/248/152?random=${getRandomInteger(0, MAX_COUNT)}`,
+        description: getRandomArrayElement(DESCRIPTIONS_DESTINATION),
+      },
+      {
+        src: `https://loremflickr.com/248/152?random=${getRandomInteger(0, MAX_COUNT)}`,
+        description: getRandomArrayElement(DESCRIPTIONS_DESTINATION),
+      }
+    ]
+  },
+
+  {
+    id: 777,
+    description: getRandomArrayElement(DESCRIPTIONS_DESTINATION),
+    name: getRandomArrayElement(NAME_DESTINATION),
+    pictures: [
+      {
+        src: `https://loremflickr.com/248/152?random=${getRandomInteger(0, MAX_COUNT)}`,
+        description: getRandomArrayElement(DESCRIPTIONS_DESTINATION),
+      }
+    ]
+  },
+
+  {
+    id: 888,
+    description: getRandomArrayElement(DESCRIPTIONS_DESTINATION),
+    name: getRandomArrayElement(NAME_DESTINATION),
+    pictures: [
+      {
+        src: `https://loremflickr.com/248/152?random=${getRandomInteger(0, MAX_COUNT)}`,
+        description: getRandomArrayElement(DESCRIPTIONS_DESTINATION),
+      },
+      {
+        src: `https://loremflickr.com/248/152?random=${getRandomInteger(0, MAX_COUNT)}`,
+        description: getRandomArrayElement(DESCRIPTIONS_DESTINATION),
+      },
+      {
+        src: `https://loremflickr.com/248/152?random=${getRandomInteger(0, MAX_COUNT)}`,
+        description: getRandomArrayElement(DESCRIPTIONS_DESTINATION),
+      }
+    ]
+  },
+
+  {
+    id: 999,
+    description: getRandomArrayElement(DESCRIPTIONS_DESTINATION),
+    name: getRandomArrayElement(NAME_DESTINATION),
+    pictures: [
+      {
+        src: `https://loremflickr.com/248/152?random=${getRandomInteger(0, MAX_COUNT)}`,
+        description: getRandomArrayElement(DESCRIPTIONS_DESTINATION),
+      },
+      {
+        src: `https://loremflickr.com/248/152?random=${getRandomInteger(0, MAX_COUNT)}`,
+        description: getRandomArrayElement(DESCRIPTIONS_DESTINATION),
+      }
+    ]
+  }
 ];
 
 export { mockDestinations };

@@ -55,6 +55,50 @@ const mockPoints = [
     offers: [51, 52, 53],
     type: 'check-in'
   },
+
+  {
+    id: 6,
+    basePrice: 1600,
+    dateFrom: '2025-05-10T10:00',
+    dateTo: '2025-05-10T18:00',
+    destination: 666,
+    isFavorite: false,
+    offers: [61, 62],
+    type: 'ship'
+  },
+
+  {
+    id: 7,
+    basePrice: 800,
+    dateFrom: '2025-04-20T08:00',
+    dateTo: '2025-04-20T12:00',
+    destination: 777,
+    isFavorite: true,
+    offers: [71, 72],
+    type: 'drive'
+  },
+
+  {
+    id: 8,
+    basePrice: 500,
+    dateFrom: '2025-03-15T09:00',
+    dateTo: '2025-03-15T14:00',
+    destination: 888,
+    isFavorite: false,
+    offers: [81, 82, 83],
+    type: 'sightseeing'
+  },
+
+  {
+    id: 9,
+    basePrice: 900,
+    dateFrom: '2025-06-01T19:00',
+    dateTo: '2025-06-01T22:00',
+    destination: 999,
+    isFavorite: true,
+    offers: [91, 92],
+    type: 'restaurant'
+  }
 ];
 
 const getRandomMockPoints = () => getRandomArrayElement(mockPoints);

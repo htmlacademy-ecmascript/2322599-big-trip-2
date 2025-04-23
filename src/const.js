@@ -25,6 +25,7 @@ const EVENT_TYPES = [
   { type: 'flight', label: 'Flight' },
   { type: 'check-in', label: 'Check-in' },
   { type: 'sightseeing', label: 'Sightseeing' },
+  { type: 'restaurant', label: 'Restaurant' },
 ];
 
 const FilterType = {

@@ -3,25 +3,17 @@ import { formatDate } from '../utils/utils.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 
 function createOffersTemplate(offersList, offers) {
-  if (!offersList.offers) {
+  if (!offersList || !offersList.offers) {
     return '';
   }
 
-  const availableOffers = [];
-
-  offersList.offers.forEach((offer) => {
-    if (offers.includes(offer.id)) {
-      availableOffers.push(offer);
-    }
-  });
-
-  return availableOffers.map(({ id, title, price }) =>
+  return offersList.offers.map((offer) =>
     `<div class="event__offer-selector">
-      <input class="event__offer-checkbox visually-hidden" id="event-offer-${id}-1" type="checkbox" name="event-offer-${id}">
-      <label class="event__offer-label" for="event-offer-${id}-1">
-        <span class="event__offer-title">${title}</span>
+      <input class="event__offer-checkbox visually-hidden" id="event-offer-${offer.id}-1" type="checkbox" name="event-offer-${offer.id}" ${offers.includes(offer.id) ? 'checked' : ''}>
+      <label class="event__offer-label" for="event-offer-${offer.id}-1">
+        <span class="event__offer-title">${offer.title}</span>
         &plus;&euro;&nbsp;
-        <span class="event__offer-price">${price}</span>
+        <span class="event__offer-price">${offer.price}</span>
       </label>
     </div>`
   ).join('');
@@ -68,7 +60,6 @@ function createEventTypeItems(currentType) {
   ).join('');
 }
 
-
 function createEditPointTemplate(point, destination, offersList) {
   const { dateFrom, dateTo, offers, type, basePrice } = point;
 
@@ -98,11 +89,14 @@ function createEditPointTemplate(point, destination, offersList) {
                     <label class="event__label  event__type-output" for="event-destination-1">
                       ${type}
                     </label>
-                    <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name}" list="destination-list-1">
+                    <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination ? destination.name : ''}" list="destination-list-1">
                     <datalist id="destination-list-1">
                       <option value="Moscow"></option>
-                      <option value="Krasnodar"></option>
+                      <option value="Rostov-on-Don"></option>
+                      <option value="Irkutsk"></option>
                       <option value="Sochi"></option>
+                      <option value="Krasnodar"></option>
+                      <option value="Kaliningrad"></option>
                     </datalist>
                   </div>
 
@@ -128,16 +122,15 @@ function createEditPointTemplate(point, destination, offersList) {
                 </button>
                 </header>
                 <section class="event__details">
-              <section class="event__section  event__section--offers">
-              ${(offersList.offers && offersList.offers.some((offer) => offers.includes(offer.id))) ? createOfferDetailsTemplate(offersList, offers) : ''}
-             </section>
-            </section>
-            <section class="event__section event__section--destination">
-          ${(destination.description || (destination.pictures && destination.pictures.length > 0)) ? createDestinationTemplate(destination) : ''}
-          </section>
-      </section>
-      </form>
-  </li>`;
+                  <section class="event__section  event__section--offers">
+                    ${offersList ? createOfferDetailsTemplate(offersList, offers) : ''}
+                  </section>
+                  <section class="event__section event__section--destination">
+                    ${destination ? createDestinationTemplate(destination) : ''}
+                  </section>
+                </section>
+              </form>
+          </li>`;
 }
 
 export default class EditPointView extends AbstractStatefulView {
@@ -145,14 +138,16 @@ export default class EditPointView extends AbstractStatefulView {
   #offersList = null;
   #onButtonClick = null;
   #onFormSubmit = null;
+  #pointsModel = null;
 
-  constructor({ point, destination, offers, onButtonClick, onFormSubmit }) {
+  constructor({ point, destination, offers, onButtonClick, onFormSubmit, pointsModel }) {
     super();
     this._setState(EditPointView.parsePointToState(point));
     this.#destination = destination;
     this.#offersList = offers;
     this.#onButtonClick = onButtonClick;
     this.#onFormSubmit = onFormSubmit;
+    this.#pointsModel = pointsModel;
 
     this._restoreHandlers();
   }
@@ -188,52 +183,41 @@ export default class EditPointView extends AbstractStatefulView {
     evt.preventDefault();
     const selectedType = evt.target.value;
 
-    const offersForType = this.#offersList.offers.find((offer) => offer.type === selectedType);
+    const newOffersList = this.#pointsModel.getOffersByType(selectedType);
 
-    const offers = offersForType ? offersForType.offers : [];
+    this._setState({
+      ...this._state,
+      type: selectedType,
+      offers: []
+    });
+
+    this.#offersList = newOffersList;
 
     this.updateElement({
-      eventType: selectedType,
-      offers: offers,
+      type: selectedType,
+      offers: []
     });
-
-    this.#updateEventType(selectedType);
-
-    this.#updateRadioButtons(selectedType);
   };
-
-  #updateEventType(type) {
-    const typeLabel = this.element.querySelector('.event__type-output');
-    const icon = this.element.querySelector('.event__type-icon');
-
-    if (typeLabel && icon) {
-      typeLabel.textContent = type;
-      icon.src = `img/icons/${type}.png`;
-    }
-  }
-
-  #updateRadioButtons(selectedType) {
-    const radioButtons = this.element.querySelectorAll('input[name="event-type"]');
-
-    radioButtons.forEach((radio) => {
-      radio.checked = (radio.value === selectedType);
-    });
-  }
 
   #destinationChangeHandler = (evt) => {
     evt.preventDefault();
-    const selectedDestination = evt.target.value;
+    const selectedDestinationName = evt.target.value;
 
-    const destinationData = this.#destination[selectedDestination];
+    const destinations = this.#pointsModel.destinations;
+    const newDestination = destinations.find(
+      (dest) => dest.name === selectedDestinationName
+    );
 
-    if (destinationData) {
+    if (newDestination) {
+      this.#destination = newDestination;
       this._setState({
         ...this._state,
-        description: destinationData.description,
-        photos: destinationData.photos,
+        destination: newDestination.id
       });
 
-      this.updateElement(this._state);
+      this.updateElement({
+        destination: newDestination.id
+      });
     }
   };
 

@@ -83,6 +83,75 @@ const mockOffers = [
       },
     ]
   },
+
+  {
+    type: 'ship',
+    offers: [
+      {
+        id: 61,
+        title: 'Cabin upgrade',
+        price: 800,
+      },
+      {
+        id: 62,
+        title: 'All inclusive',
+        price: 1200,
+      }
+    ]
+  },
+
+  {
+    type: 'drive',
+    offers: [
+      {
+        id: 71,
+        title: 'Car insurance',
+        price: 400,
+      },
+      {
+        id: 72,
+        title: 'Child seat',
+        price: 200,
+      }
+    ]
+  },
+
+  {
+    type: 'sightseeing',
+    offers: [
+      {
+        id: 81,
+        title: 'Guide service',
+        price: 300,
+      },
+      {
+        id: 82,
+        title: 'Audio guide',
+        price: 100,
+      },
+      {
+        id: 83,
+        title: 'VIP access',
+        price: 500,
+      }
+    ]
+  },
+
+  {
+    type: 'restaurant',
+    offers: [
+      {
+        id: 91,
+        title: 'Special menu',
+        price: 600,
+      },
+      {
+        id: 92,
+        title: 'Wine tasting',
+        price: 400,
+      }
+    ]
+  }
 ];
 
 export { mockOffers };
