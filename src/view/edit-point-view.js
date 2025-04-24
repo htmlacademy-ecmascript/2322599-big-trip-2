@@ -1,6 +1,9 @@
 import { EVENT_TYPES } from '../const.js';
 import { formatDate } from '../utils/utils.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
+import flatpickr from 'flatpickr';
+
+import 'flatpickr/dist/flatpickr.min.css';
 
 function createOffersTemplate(offersList, offers) {
   if (!offersList || !offersList.offers) {
