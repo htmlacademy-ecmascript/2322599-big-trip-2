@@ -1,5 +1,5 @@
 import { EVENT_TYPES } from '../const.js';
-import { formatDate } from '../utils/utils.js';
+import { formatDate, parseDateForFlatpickr, formatDateForFlatpickr } from '../utils/utils.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import flatpickr from 'flatpickr';
 
@@ -142,6 +142,8 @@ export default class EditPointView extends AbstractStatefulView {
   #onButtonClick = null;
   #onFormSubmit = null;
   #pointsModel = null;
+  #datepickerFrom = null;
+  #datepickerTo = null;
 
   constructor({ point, destination, offers, onButtonClick, onFormSubmit, pointsModel }) {
     super();
@@ -159,6 +161,20 @@ export default class EditPointView extends AbstractStatefulView {
     return createEditPointTemplate(this._state, this.#destination, this.#offersList);
   }
 
+  removeElement() {
+    super.removeElement();
+
+    if (this.#datepickerFrom) {
+      this.#datepickerFrom.destroy();
+      this.#datepickerFrom = null;
+    }
+
+    if (this.#datepickerTo) {
+      this.#datepickerTo.destroy();
+      this.#datepickerTo = null;
+    }
+  }
+
   reset(point) {
     this.updateElement(
       EditPointView.parsePointToState(point),
@@ -170,6 +186,9 @@ export default class EditPointView extends AbstractStatefulView {
     this.element.querySelector('.event--edit').addEventListener('submit', this.#formSubmitHandler);
     this.element.querySelector('.event__type-group').addEventListener('change', this.#typeToggleHandler);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationChangeHandler);
+
+    this.#setDatepickerFrom();
+    this.#setDatepickerTo();
   }
 
   #buttonClickHandler = (evt) => {
@@ -223,6 +242,98 @@ export default class EditPointView extends AbstractStatefulView {
       });
     }
   };
+
+  #dateFromChangeHandler = ([userDate]) => {
+    // Обновляем дату начала
+    const newState = {
+      ...this._state,
+      dateFrom: userDate,
+    };
+
+    // Если дата окончания стала раньше даты начала, обновляем её
+    if (newState.dateTo < userDate) {
+      newState.dateTo = userDate;
+
+      // Сразу обновляем datepickerTo, чтобы показать изменения
+      if (this.#datepickerTo) {
+        this.#datepickerTo.setDate(userDate);
+      }
+    }
+
+    // Применяем изменения состояния
+    this._setState(newState);
+
+    // Перезагружаем datepickerTo с новым minDate
+    this.#setDatepickerTo();
+  };
+
+  #dateToChangeHandler = ([userDate]) => {
+    this._setState({
+      ...this._state,
+      dateTo: userDate
+    });
+  };
+
+  #setDatepickerCommon(elementId, defaultDate, onChange, minDate = null) {
+    const input = this.element.querySelector(`#${elementId}`);
+    if (!input) {
+      return;
+    }
+
+    // Удаление существующего datepicker
+    if (elementId === 'event-start-time-1') {
+      this.#datepickerFrom?.destroy();
+      this.#datepickerFrom = null;
+    } else {
+      this.#datepickerTo?.destroy();
+      this.#datepickerTo = null;
+    }
+
+    const options = {
+      enableTime: true,
+      dateFormat: 'd/m/y H:i',
+      defaultDate: parseDateForFlatpickr(defaultDate),
+      onChange,
+      'time_24hr': true,
+      allowInput: true,
+      parseDate: parseDateForFlatpickr,
+      formatDate: formatDateForFlatpickr,
+      minDate: minDate ? parseDateForFlatpickr(minDate) : null
+    };
+
+    if (elementId === 'event-start-time-1') {
+      this.#datepickerFrom = flatpickr(input, options);
+    } else {
+      this.#datepickerTo = flatpickr(input, options);
+    }
+  }
+
+  #setDatepickerFrom() {
+    this.#setDatepickerCommon(
+      'event-start-time-1',
+      this._state.dateFrom,
+      this.#dateFromChangeHandler
+    );
+  }
+
+  #setDatepickerTo() {
+    const minDate = this._state.dateFrom;
+    const correctedDateTo = this._state.dateTo < minDate ? minDate : this._state.dateTo;
+
+    if (this._state.dateTo < minDate) {
+      this._setState({
+        ...this._state,
+        dateTo: minDate
+      });
+    }
+
+    this.#setDatepickerCommon(
+      'event-end-time-1',
+      correctedDateTo,
+      this.#dateToChangeHandler,
+      minDate
+    );
+  }
 
   static parsePointToState(point) {
     return { ...point };
