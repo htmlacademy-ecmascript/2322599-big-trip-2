@@ -244,32 +244,30 @@ export default class EditPointView extends AbstractStatefulView {
   };
 
   #dateFromChangeHandler = ([userDate]) => {
-    const newState = {
+    this._setState({
       ...this._state,
       dateFrom: userDate,
-    };
+      dateTo: userDate > this._state.dateTo ? userDate : this._state.dateTo
+    });
 
-    if (newState.dateTo < userDate) {
-      newState.dateTo = userDate;
-
-      if (this.#datepickerTo) {
-        this.#datepickerTo.setDate(userDate);
-      }
+    if (this.#datepickerTo) {
+      this.#datepickerTo.set('minDate', userDate);
     }
-
-    this._setState(newState);
-
-    this.#setDatepickerTo();
   };
 
   #dateToChangeHandler = ([userDate]) => {
     this._setState({
       ...this._state,
-      dateTo: userDate
+      dateTo: userDate,
+      dateFrom: userDate < this._state.dateFrom ? userDate : this._state.dateFrom
     });
+
+    if (this.#datepickerFrom) {
+      this.#datepickerFrom.set('maxDate', userDate);
+    }
   };
 
-  #setDatepickerCommon(elementId, defaultDate, onChange, minDate = null) {
+  #setDatepickerCommon(elementId, defaultDate, onChange, minDate = null, maxDate = null) {
     const input = this.element.querySelector(`#${elementId}`);
     if (!input) {
       return;
@@ -292,7 +290,8 @@ export default class EditPointView extends AbstractStatefulView {
       allowInput: true,
       parseDate: parseDateForFlatpickr,
       formatDate: formatDateForFlatpickr,
-      minDate: minDate ? parseDateForFlatpickr(minDate) : null
+      minDate: minDate ? parseDateForFlatpickr(minDate) : null,
+      maxDate: maxDate ? parseDateForFlatpickr(maxDate) : null
     };
 
     if (elementId === 'event-start-time-1') {
@@ -306,26 +305,19 @@ export default class EditPointView extends AbstractStatefulView {
     this.#setDatepickerCommon(
       'event-start-time-1',
       this._state.dateFrom,
-      this.#dateFromChangeHandler
+      this.#dateFromChangeHandler,
+      null,
+      this._state.dateTo
     );
   }
 
   #setDatepickerTo() {
-    const minDate = this._state.dateFrom;
-    const correctedDateTo = this._state.dateTo < minDate ? minDate : this._state.dateTo;
-
-    if (this._state.dateTo < minDate) {
-      this._setState({
-        ...this._state,
-        dateTo: minDate
-      });
-    }
-
     this.#setDatepickerCommon(
       'event-end-time-1',
-      correctedDateTo,
+      this._state.dateTo,
       this.#dateToChangeHandler,
-      minDate
+      this._state.dateFrom,
+      null
     );
   }
 
