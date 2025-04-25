@@ -311,6 +311,7 @@ export default class EditPointView extends AbstractStatefulView {
     );
   }
 
+  // комментарий для ПР
   #setDatepickerTo() {
     this.#setDatepickerCommon(
       'event-end-time-1',
