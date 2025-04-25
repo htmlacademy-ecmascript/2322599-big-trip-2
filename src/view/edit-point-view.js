@@ -244,26 +244,21 @@ export default class EditPointView extends AbstractStatefulView {
   };
 
   #dateFromChangeHandler = ([userDate]) => {
-    // Обновляем дату начала
     const newState = {
       ...this._state,
       dateFrom: userDate,
     };
 
-    // Если дата окончания стала раньше даты начала, обновляем её
     if (newState.dateTo < userDate) {
       newState.dateTo = userDate;
 
-      // Сразу обновляем datepickerTo, чтобы показать изменения
       if (this.#datepickerTo) {
         this.#datepickerTo.setDate(userDate);
       }
     }
 
-    // Применяем изменения состояния
     this._setState(newState);
 
-    // Перезагружаем datepickerTo с новым minDate
     this.#setDatepickerTo();
   };
 
@@ -280,7 +275,6 @@ export default class EditPointView extends AbstractStatefulView {
       return;
     }
 
-    // Удаление существующего datepicker
     if (elementId === 'event-start-time-1') {
       this.#datepickerFrom?.destroy();
       this.#datepickerFrom = null;

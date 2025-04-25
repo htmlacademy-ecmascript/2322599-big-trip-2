@@ -65,17 +65,14 @@ function sortByPrice(taskA, taskB) {
 }
 
 function parseDateForFlatpickr(date) {
-  // Если уже объект Date
   if (date instanceof Date) {
     return date;
   }
 
-  // Для ISO строк (из моков)
   if (typeof date === 'string' && date.includes('T')) {
     return new Date(date);
   }
 
-  // Для строк flatpickr (формат 'd/m/y H:i')
   if (typeof date === 'string') {
     const [datePart, timePart] = date.split(' ');
     const [day, month, year] = datePart.split('/');
@@ -90,7 +87,7 @@ function parseDateForFlatpickr(date) {
     );
   }
 
-  return new Date(); // fallback
+  return new Date();
 }
 
 function formatDateForFlatpickr(date) {
@@ -98,11 +95,11 @@ function formatDateForFlatpickr(date) {
 
   const day = dateObj.getDate().toString().padStart(2, '0');
   const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
-  const year = dateObj.getFullYear().toString().slice(-2); // Берем только 2 последние цифры года
+  const year = dateObj.getFullYear().toString().slice(-2);
   const hours = dateObj.getHours().toString().padStart(2, '0');
   const minutes = dateObj.getMinutes().toString().padStart(2, '0');
 
-  return `${day}/${month}/${year} ${hours}:${minutes}`; // 25/12/19 16:00
+  return `${day}/${month}/${year} ${hours}:${minutes}`;
 }
 
 export { formatDate, calculateDuration, isPointPast, isPointPresent, isPointFuture, sortByDay, sortByTime, sortByPrice, parseDateForFlatpickr, formatDateForFlatpickr };
