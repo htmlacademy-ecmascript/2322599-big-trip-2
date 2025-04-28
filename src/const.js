@@ -43,4 +43,16 @@ const SortType = {
   OFFERS: 'offers'
 };
 
-export { DESCRIPTIONS_DESTINATION, NAME_DESTINATION, MAX_COUNT, EVENT_TYPES, FilterType, SortType };
+const UserAction = {
+  UPDATE_POINT: 'UPDATE_POINT',
+  ADD_POINT: 'ADD_POINT',
+  DELETE_POINT: 'DELETE_POINT',
+};
+
+const UpdateType = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR',
+};
+
+export { DESCRIPTIONS_DESTINATION, NAME_DESTINATION, MAX_COUNT, EVENT_TYPES, FilterType, SortType, UserAction, UpdateType };
