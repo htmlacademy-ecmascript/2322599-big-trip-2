@@ -65,10 +65,10 @@ export default class BoardPresenter {
         break;
       case UpdateType.MINOR:
         this.#clearBoard();
-        this.#renderPoints();
+        this.#renderBoard();
         break;
       case UpdateType.MAJOR:
-        this.#clearBoard();
+        this.#clearBoard({ resetSortType: true });
         this.#renderBoard();
         break;
     }

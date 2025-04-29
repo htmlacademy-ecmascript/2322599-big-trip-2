@@ -2,6 +2,7 @@ import { render, replace, remove } from '../framework/render.js';
 import EditPointView from '../view/edit-point-view.js';
 import PointView from '../view/point-view.js';
 import { UserAction, UpdateType } from '../const.js';
+import { isDatesEqual } from '../utils/utils.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -50,6 +51,7 @@ export default class PointPresenter {
       pointsModel: this.#pointsModel,
       onButtonClick: this.#formSubmitHandler,
       onFormSubmit: this.#formSubmitHandler,
+      onDeleteClick: this.#handleDeleteClick
     });
 
     if (prevPointComponent === null || prevEditPointComponent === null) {
@@ -114,12 +116,26 @@ export default class PointPresenter {
     );
   };
 
-  #formSubmitHandler = (point) => {
+  #formSubmitHandler = (update) => {
+    const isMinorUpdate =
+      !isDatesEqual(this.#point.dateFrom, update.dateFrom) ||
+      !isDatesEqual(this.#point.dateTo, update.dateTo) ||
+      this.#point.type !== update.type ||
+      this.#point.destination !== update.destination;
+
     this.#handleDataChange(
       UserAction.UPDATE_POINT,
-      UpdateType.MINOR,
-      point,
+      isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
+      update,
     );
     this.#replaceEditFormToPoint();
+  };
+
+  #handleDeleteClick = (point) => {
+    this.#handleDataChange(
+      UserAction.DELETE_POINT,
+      UpdateType.MINOR,
+      point
+    );
   };
 }

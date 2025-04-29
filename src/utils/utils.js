@@ -102,4 +102,8 @@ function formatDateForFlatpickr(date) {
   return `${day}/${month}/${year} ${hours}:${minutes}`;
 }
 
-export { formatDate, calculateDuration, isPointPast, isPointPresent, isPointFuture, sortByDay, sortByTime, sortByPrice, parseDateForFlatpickr, formatDateForFlatpickr };
+function isDatesEqual(dateA, dateB) {
+  return (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB, 'minute');
+}
+
+export { formatDate, calculateDuration, isPointPast, isPointPresent, isPointFuture, sortByDay, sortByTime, sortByPrice, parseDateForFlatpickr, formatDateForFlatpickr, isDatesEqual };

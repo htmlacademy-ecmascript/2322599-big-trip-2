@@ -144,14 +144,16 @@ export default class EditPointView extends AbstractStatefulView {
   #pointsModel = null;
   #datepickerFrom = null;
   #datepickerTo = null;
+  #handleDeleteClick = null;
 
-  constructor({ point, destination, offers, onButtonClick, onFormSubmit, pointsModel }) {
+  constructor({ point, destination, offers, onButtonClick, onFormSubmit, onDeleteClick, pointsModel }) {
     super();
     this._setState(EditPointView.parsePointToState(point));
     this.#destination = destination;
     this.#offersList = offers;
     this.#onButtonClick = onButtonClick;
     this.#onFormSubmit = onFormSubmit;
+    this.#handleDeleteClick = onDeleteClick;
     this.#pointsModel = pointsModel;
 
     this._restoreHandlers();
@@ -186,10 +188,16 @@ export default class EditPointView extends AbstractStatefulView {
     this.element.querySelector('.event--edit').addEventListener('submit', this.#formSubmitHandler);
     this.element.querySelector('.event__type-group').addEventListener('change', this.#typeToggleHandler);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationChangeHandler);
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#formDeleteClickHandler);
 
     this.#setDatepickerFrom();
     this.#setDatepickerTo();
   }
+
+  #formDeleteClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleDeleteClick(EditPointView.parseStateToPoint(this._state));
+  };
 
   #buttonClickHandler = (evt) => {
     evt.preventDefault();
@@ -311,7 +319,6 @@ export default class EditPointView extends AbstractStatefulView {
     );
   }
 
-  // комментарий для ПР
   #setDatepickerTo() {
     this.#setDatepickerCommon(
       'event-end-time-1',
