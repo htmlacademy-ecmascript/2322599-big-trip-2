@@ -11,6 +11,7 @@ const filterModel = new FilterModel();
 const boardPresenter = new BoardPresenter({
   boardContainer: eventsContainer,
   pointsModel,
+  filterModel
 });
 
 const filterPresenter = new FilterPresenter({
