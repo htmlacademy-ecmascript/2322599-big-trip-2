@@ -3,6 +3,7 @@ import EventListView from '../view/event-list-view.js';
 import NoPointView from '../view/no-point-view.js';
 import SortView from '../view/sort-view.js';
 import PointPresenter from './point-presenter.js';
+import NewPointPresenter from './new-point-presenter.js';
 import { sortByDay, sortByTime, sortByPrice } from '../utils/utils.js';
 import { filter } from '../utils/filter.js';
 import { SortType, UpdateType, UserAction, FilterType } from '../const.js';
@@ -19,14 +20,24 @@ export default class BoardPresenter {
   #filterType = FilterType.EVERYTHING;
 
   #eventListComponent = new EventListView();
+  #newPointPresenter = null;
+  #addNewPointButtonComponent = null;
 
-  constructor({ boardContainer, pointsModel, filterModel }) {
+  constructor({ boardContainer, pointsModel, filterModel, addNewPointButtonComponent }) {
     this.#boardContainer = boardContainer;
     this.#pointsModel = pointsModel;
     this.#filterModel = filterModel;
+    this.#addNewPointButtonComponent = addNewPointButtonComponent;
 
     this.#pointsModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
+
+    this.#newPointPresenter = new NewPointPresenter({
+      eventListContainer: this.#eventListComponent.element,
+      pointsModel: this.#pointsModel,
+      onDataChange: this.#handleViewAction,
+      onDestroy: this.#handleNewPointFormClose // Используем внутренний обработчик
+    });
   }
 
   get points() {
@@ -50,8 +61,29 @@ export default class BoardPresenter {
   }
 
   #handleModeChange = () => {
+    this.#newPointPresenter.destroy();
     this.#pointPresenters.forEach((presenter) => presenter.resetView());
   };
+
+  #handleNewPointFormClose = () => {
+    if (this.#addNewPointButtonComponent) {
+      this.#addNewPointButtonComponent.element.disabled = false;
+    }
+  };
+
+  createPoint() {
+    this.#currentSortType = SortType.DAY;
+    this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+    this.#newPointPresenter.init();
+
+    if (this.#addNewPointButtonComponent) {
+      this.#addNewPointButtonComponent.element.disabled = true;
+    }
+  }
+
+  setAddNewPointButton(buttonComponent) {
+    this.#addNewPointButtonComponent = buttonComponent;
+  }
 
   #handleViewAction = (actionType, updateType, update) => {
     switch (actionType) {
@@ -127,6 +159,7 @@ export default class BoardPresenter {
   }
 
   #clearBoard({ resetSortType = false } = {}) {
+    this.#newPointPresenter.destroy();
     this.#pointPresenters.forEach((presenter) => presenter.destroy());
     this.#pointPresenters.clear();
 

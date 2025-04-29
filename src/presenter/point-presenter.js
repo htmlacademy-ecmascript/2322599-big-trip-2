@@ -25,7 +25,11 @@ export default class PointPresenter {
     this.#eventListContainer = eventListContainer;
     this.#pointsModel = pointsModel;
     this.#handleDataChange = onDataChange;
-    this.#handleModeChange = onModeChange;
+
+    this.#handleModeChange = () => {
+      onModeChange();
+      this.#replaceEditFormToPoint();
+    };
   }
 
   init(point, offers, destination) {
