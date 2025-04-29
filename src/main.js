@@ -3,7 +3,10 @@ import FiltersView from './view/filters-view.js';
 import BoardPresenter from './presenter/board-presenter.js';
 import PointsModel from './model/points-model.js';
 import FilterModel from './model/filter-model.js';
-import { generateFilter } from './mock/filter.js';
+
+const filters = [
+  { type: 'everything' }
+];
 
 const filtersContainer = document.querySelector('.trip-controls__filters');
 const eventsContainer = document.querySelector('.trip-events');
@@ -14,8 +17,10 @@ const boardPresenter = new BoardPresenter({
   pointsModel,
 });
 
-const filters = generateFilter(pointsModel.points);
-
-render(new FiltersView({ filters }), filtersContainer);
+render(new FiltersView({
+  filters,
+  currentFilterType: 'everything',
+  onFilterTypeChange: () => { }
+}), filtersContainer);
 
 boardPresenter.init();
