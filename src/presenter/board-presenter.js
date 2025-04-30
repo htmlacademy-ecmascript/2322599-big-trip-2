@@ -36,7 +36,7 @@ export default class BoardPresenter {
       eventListContainer: this.#eventListComponent.element,
       pointsModel: this.#pointsModel,
       onDataChange: this.#handleViewAction,
-      onDestroy: this.#handleNewPointFormClose // Используем внутренний обработчик
+      onDestroy: this.#handleNewPointFormClose
     });
   }
 
