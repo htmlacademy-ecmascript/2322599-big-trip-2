@@ -190,10 +190,19 @@ export default class EditPointView extends AbstractStatefulView {
     this.element.querySelector('.event__type-group').addEventListener('change', this.#typeToggleHandler);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationChangeHandler);
     this.element.querySelector('.event__reset-btn').addEventListener('click', this.#formDeleteClickHandler);
+    this.element.querySelector('.event__input--price').addEventListener('change', this.#priceChangeHandler);
 
     this.#setDatepickerFrom();
     this.#setDatepickerTo();
   }
+
+  #priceChangeHandler = (evt) => {
+    const price = parseInt(evt.target.value, 10);
+    this._setState({
+      ...this._state,
+      basePrice: isNaN(price) ? 0 : price
+    });
+  };
 
   #formDeleteClickHandler = (evt) => {
     evt.preventDefault();
@@ -207,6 +216,30 @@ export default class EditPointView extends AbstractStatefulView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
+
+    const destinationInput = this.element.querySelector('.event__input--destination');
+    const priceInput = this.element.querySelector('.event__input--price');
+    const startTimeInput = this.element.querySelector('#event-start-time-1');
+    const endTimeInput = this.element.querySelector('#event-end-time-1');
+
+    const datalistOptions = Array.from(this.element.querySelector('#destination-list-1').options);
+    const isValidDestination = datalistOptions.some((option) => option.value === destinationInput.value);
+
+    const hasValidDates = startTimeInput.value && endTimeInput.value;
+
+    const price = parseInt(priceInput.value, 10);
+    const isValidPrice = !isNaN(price) && price > 0;
+
+    if (!isValidDestination || !hasValidDates || !isValidPrice) {
+      this._setState({
+        ...this._state,
+        dateFrom: startTimeInput.value ? this._state.dateFrom : null,
+        dateTo: endTimeInput.value ? this._state.dateTo : null,
+        basePrice: priceInput.value ? parseInt(priceInput.value, 10) : 0
+      });
+      return;
+    }
+
     this.#onFormSubmit(EditPointView.parseStateToPoint(this._state));
   };
 
@@ -253,6 +286,14 @@ export default class EditPointView extends AbstractStatefulView {
   };
 
   #dateFromChangeHandler = ([userDate]) => {
+    if (!userDate) {
+      this._setState({
+        ...this._state,
+        dateFrom: null
+      });
+      return;
+    }
+
     this._setState({
       ...this._state,
       dateFrom: userDate,
@@ -265,6 +306,14 @@ export default class EditPointView extends AbstractStatefulView {
   };
 
   #dateToChangeHandler = ([userDate]) => {
+    if (!userDate) {
+      this._setState({
+        ...this._state,
+        dateTo: null
+      });
+      return;
+    }
+
     this._setState({
       ...this._state,
       dateTo: userDate,

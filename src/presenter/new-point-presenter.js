@@ -55,6 +55,11 @@ export default class NewPointPresenter {
   }
 
   #handleFormSubmit = (point) => {
+    const destination = this.#pointsModel.getDestinationById(point.destination);
+    if (!destination || !point.dateFrom || !point.dateTo || point.basePrice <= 0) {
+      return;
+    }
+
     this.#handleDataChange(
       UserAction.ADD_POINT,
       UpdateType.MINOR,

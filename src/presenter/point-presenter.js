@@ -114,6 +114,13 @@ export default class PointPresenter {
   };
 
   #formSubmitHandler = (update) => {
+    const destinations = this.#pointsModel.destinations;
+    const destination = destinations.find((dest) => dest.id === update.destination);
+
+    if (!destination || !update.dateFrom || !update.dateTo || update.basePrice <= 0) {
+      return;
+    }
+
     const isMinorUpdate =
       !isDatesEqual(this.#point.dateFrom, update.dateFrom) ||
       !isDatesEqual(this.#point.dateTo, update.dateTo) ||
