@@ -48,8 +48,8 @@ const mockPoints = [
   {
     id: 5,
     basePrice: 1500,
-    dateFrom: '2025-04-04T16:00:56.845Z',
-    dateTo: '2025-04-04T18:00:56.845Z',
+    dateFrom: '2025-04-29T16:00:56.845Z',
+    dateTo: '2025-04-29T18:00:56.845Z',
     destination: 555,
     isFavorite: true,
     offers: [51, 52, 53],

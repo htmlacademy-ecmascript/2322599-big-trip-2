@@ -3,25 +3,28 @@ import dayjs from 'dayjs';
 const DATE_FORMAT = 'DD/MM/YY';
 const TIME_FORMAT = 'HH:mm';
 const ALT_DATE_FORMAT = 'MMM DD';
-const EDIT_FORMAT = 'DD/MM/YYYY HH:mm';
+const EDIT_FORMAT = 'DD/MM/YY HH:mm';
 const MINUTES_IN_HOUR = 60;
+const MINUTES_IN_DAY = 1440;
 
 function formatDate(date, formatType = 'default') {
   if (!date) {
     return '';
   }
 
+  const dateObj = dayjs(date);
+
   switch (formatType) {
     case 'alt':
-      return dayjs(date).format(ALT_DATE_FORMAT).toUpperCase();
+      return dateObj.format(ALT_DATE_FORMAT).toUpperCase();
     case 'date':
-      return dayjs(date).format(DATE_FORMAT);
+      return dateObj.format(DATE_FORMAT);
     case 'time':
-      return dayjs(date).format(TIME_FORMAT);
+      return dateObj.format(TIME_FORMAT);
     case 'edit':
-      return dayjs(date).format(EDIT_FORMAT);
+      return dateObj.format(EDIT_FORMAT);
     default:
-      return dayjs(date).format();
+      return dateObj.format();
   }
 }
 
@@ -31,10 +34,12 @@ const calculateDuration = (dateFrom, dateTo) => {
 
   const durationInMinutes = end.diff(start, 'minute');
 
-  const hours = Math.floor(durationInMinutes / MINUTES_IN_HOUR);
-  const minutes = durationInMinutes % MINUTES_IN_HOUR;
+  const days = Math.floor(durationInMinutes / MINUTES_IN_DAY);
+  const remainingMinutes = durationInMinutes % MINUTES_IN_DAY;
+  const hours = Math.floor(remainingMinutes / MINUTES_IN_HOUR);
+  const minutes = remainingMinutes % MINUTES_IN_HOUR;
 
-  return { hours, minutes };
+  return { days, hours, minutes };
 };
 
 function isPointPast(dateFrom) {
@@ -65,6 +70,10 @@ function sortByPrice(taskA, taskB) {
 }
 
 function parseDateForFlatpickr(date) {
+  if (!date) {
+    return null;
+  }
+
   if (date instanceof Date) {
     return date;
   }
@@ -78,8 +87,10 @@ function parseDateForFlatpickr(date) {
     const [day, month, year] = datePart.split('/');
     const [hours, minutes] = timePart.split(':');
 
+    const fullYear = 2000 + parseInt(year, 10);
+
     return new Date(
-      parseInt(year, 10),
+      fullYear,
       parseInt(month, 10) - 1,
       parseInt(day, 10),
       parseInt(hours, 10),
@@ -87,7 +98,7 @@ function parseDateForFlatpickr(date) {
     );
   }
 
-  return new Date();
+  return null;
 }
 
 function formatDateForFlatpickr(date) {
@@ -102,4 +113,8 @@ function formatDateForFlatpickr(date) {
   return `${day}/${month}/${year} ${hours}:${minutes}`;
 }
 
-export { formatDate, calculateDuration, isPointPast, isPointPresent, isPointFuture, sortByDay, sortByTime, sortByPrice, parseDateForFlatpickr, formatDateForFlatpickr };
+function isDatesEqual(dateA, dateB) {
+  return (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB, 'minute');
+}
+
+export { formatDate, calculateDuration, isPointPast, isPointPresent, isPointFuture, sortByDay, sortByTime, sortByPrice, parseDateForFlatpickr, formatDateForFlatpickr, isDatesEqual };
