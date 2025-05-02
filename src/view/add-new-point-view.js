@@ -67,10 +67,10 @@ function createEventTypeItems(currentType) {
 function createAddNewPointTemplate(point, destination, offersList) {
   const { dateFrom, dateTo, offers, type, basePrice } = point;
 
-  const formattedStartDate = formatDate(dateFrom, 'date');
-  const formattedEndDate = formatDate(dateTo, 'date');
-  const formattedStartTime = formatDate(dateFrom, 'time');
-  const formattedEndTime = formatDate(dateTo, 'time');
+  const formattedStartDate = dateFrom ? formatDate(dateFrom, 'date') : '';
+  const formattedEndDate = dateTo ? formatDate(dateTo, 'date') : '';
+  const formattedStartTime = dateFrom ? formatDate(dateFrom, 'time') : '';
+  const formattedEndTime = dateTo ? formatDate(dateTo, 'time') : '';
 
   return `<li class="trip-events__item">
               <form class="event event--edit" action="#" method="post">
@@ -151,7 +151,12 @@ export default class AddNewPointView extends AbstractStatefulView {
 
   constructor({ point, destination, offers, onFormSubmit, onCancelClick, pointsModel }) {
     super();
-    this._setState(AddNewPointView.parsePointToState(point));
+    const initialState = {
+      ...AddNewPointView.parsePointToState(point),
+      dateFrom: null,
+      dateTo: null
+    };
+    this._setState(initialState);
     this.#destination = destination;
     this.#offersList = offers;
     this.#onFormSubmit = onFormSubmit;
@@ -215,23 +220,28 @@ export default class AddNewPointView extends AbstractStatefulView {
     const datalistOptions = Array.from(this.element.querySelector('#destination-list-1').options);
     const isValidDestination = datalistOptions.some((option) => option.value === destinationInput.value);
 
-    const hasValidDates = startTimeInput.value && endTimeInput.value;
+    const hasValidDates = this._state.dateFrom && this._state.dateTo;
 
     const price = parseInt(priceInput.value, 10);
     const isValidPrice = !isNaN(price) && price > 0;
 
     if (!isValidDestination || !hasValidDates || !isValidPrice) {
-      this._setState({
-        ...this._state,
-        dateFrom: startTimeInput.value ? this._state.dateFrom : null,
-        dateTo: endTimeInput.value ? this._state.dateTo : null,
-        basePrice: priceInput.value ? parseInt(priceInput.value, 10) : 0
-      });
+      if (!isValidDestination) {
+        destinationInput.style.borderColor = 'red';
+      }
+      if (!hasValidDates) {
+        startTimeInput.style.borderColor = 'red';
+        endTimeInput.style.borderColor = 'red';
+      }
+      if (!isValidPrice) {
+        priceInput.style.borderColor = 'red';
+      }
       return;
     }
 
     this.#onFormSubmit(AddNewPointView.parseStateToPoint(this._state));
   };
+
 
   #typeToggleHandler = (evt) => {
     evt.preventDefault();
@@ -302,24 +312,24 @@ export default class AddNewPointView extends AbstractStatefulView {
   #dateFromChangeHandler = ([userDate]) => {
     this._setState({
       ...this._state,
-      dateFrom: userDate,
-      dateTo: userDate > this._state.dateTo ? userDate : this._state.dateTo
+      dateFrom: userDate || null,
+      dateTo: userDate && userDate > this._state.dateTo ? userDate : this._state.dateTo
     });
 
     if (this.#datepickerTo) {
-      this.#datepickerTo.set('minDate', userDate);
+      this.#datepickerTo.set('minDate', userDate || null);
     }
   };
 
   #dateToChangeHandler = ([userDate]) => {
     this._setState({
       ...this._state,
-      dateTo: userDate,
-      dateFrom: userDate < this._state.dateFrom ? userDate : this._state.dateFrom
+      dateTo: userDate || null,
+      dateFrom: userDate && userDate < this._state.dateFrom ? userDate : this._state.dateFrom
     });
 
     if (this.#datepickerFrom) {
-      this.#datepickerFrom.set('maxDate', userDate);
+      this.#datepickerFrom.set('maxDate', userDate || null);
     }
   };
 
@@ -340,14 +350,15 @@ export default class AddNewPointView extends AbstractStatefulView {
     const options = {
       enableTime: true,
       dateFormat: 'd/m/y H:i',
-      defaultDate: parseDateForFlatpickr(defaultDate),
+      ...(defaultDate ? { defaultDate: parseDateForFlatpickr(defaultDate) } : {}),
       onChange,
       'time_24hr': true,
       allowInput: true,
       parseDate: parseDateForFlatpickr,
       formatDate: formatDateForFlatpickr,
       minDate: minDate ? parseDateForFlatpickr(minDate) : null,
-      maxDate: maxDate ? parseDateForFlatpickr(maxDate) : null
+      maxDate: maxDate ? parseDateForFlatpickr(maxDate) : null,
+      allowEmpty: true
     };
 
     if (elementId === 'event-start-time-1') {

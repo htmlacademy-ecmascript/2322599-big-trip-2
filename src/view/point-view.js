@@ -29,7 +29,16 @@ function createPointTemplate(point, destination, offersList) {
   const formattedStartDate = formatDate(dateFrom, 'alt');
   const formattedStartTime = formatDate(dateFrom, 'time');
   const formattedEndTime = formatDate(dateTo, 'time');
-  const { hours, minutes } = calculateDuration(dateFrom, dateTo);
+  const { days, hours, minutes } = calculateDuration(dateFrom, dateTo);
+
+  let durationText = '';
+  if (days > 0) {
+    durationText = `${days.toString().padStart(2, '0')}D ${hours.toString().padStart(2, '0')}H ${minutes.toString().padStart(2, '0')}M`;
+  } else if (hours > 0) {
+    durationText = `${hours.toString().padStart(2, '0')}H ${minutes.toString().padStart(2, '0')}M`;
+  } else {
+    durationText = `${minutes}M`;
+  }
 
   const favoriteClassName = isFavorite
     ? 'event__favorite-btn--active'
@@ -37,18 +46,18 @@ function createPointTemplate(point, destination, offersList) {
 
   return `<li class="trip-events__item">
               <div class="event">
-                <time class="event__date" datetime="${new Date(dateFrom).toISOString()}">${formattedStartDate}</time>
+                <time class="event__date" datetime="${dateFrom}">${formattedStartDate}</time>
                 <div class="event__type">
                   <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
                 </div>
                 <h3 class="event__title">${type.charAt(0).toUpperCase() + type.slice(1)} ${destination.name}</h3>
                 <div class="event__schedule">
                   <p class="event__time">
-                  <time class="event__start-time" datetime="${new Date(dateFrom).toISOString()}">${formattedStartTime}</time>
+                  <time class="event__start-time" datetime="${dateFrom}">${formattedStartTime}</time>
                     &mdash;
-                    <time class="event__end-time" datetime="${new Date(dateTo).toISOString()}">${formattedEndTime}</time>
+                    <time class="event__end-time" datetime="${dateTo}">${formattedEndTime}</time>
                   </p>
-                  <p class="event__duration">${hours}H ${minutes}M</p>
+                  <p class="event__duration">${durationText}</p>
                 </div>
                 <p class="event__price">
                 &euro;&nbsp;<span class="event__price-value">${basePrice}</span>
