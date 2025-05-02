@@ -53,6 +53,7 @@ const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
+  INIT: 'INIT',
 };
 
 export { DESCRIPTIONS_DESTINATION, NAME_DESTINATION, MAX_COUNT, EVENT_TYPES, FilterType, SortType, UserAction, UpdateType };
