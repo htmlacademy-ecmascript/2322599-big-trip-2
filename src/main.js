@@ -41,6 +41,7 @@ const initApp = () => {
   render(addNewPointButtonComponent, tripMainContainer);
   filterPresenter.init();
   boardPresenter.init();
+  pointsModel.init();
 };
 
 initApp();

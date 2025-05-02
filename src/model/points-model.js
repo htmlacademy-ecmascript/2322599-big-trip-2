@@ -1,38 +1,14 @@
 import Observable from '../framework/observable.js';
-import { getRandomMockPoints } from '../mock/points.js';
-import { mockDestinations } from '../mock/destinations.js';
-import { mockOffers } from '../mock/offers.js';
-
-const POINTS_COUNT = 5;
 
 export default class PointsModel extends Observable {
   #pointsApiService = null;
-  #destinations = mockDestinations;
-  #offers = mockOffers;
-  #points = this.generateUniquePoints();
+  #destinations = [];
+  #offers = [];
+  #points = [];
 
   constructor({ pointsApiService }) {
     super();
     this.#pointsApiService = pointsApiService;
-
-    this.#pointsApiService.points.then((points) => {
-      console.log(points.map(this.#adaptToClient));
-    });
-  }
-
-  generateUniquePoints() {
-    const uniqueIds = new Set();
-    const points = [];
-
-    while (points.length < POINTS_COUNT) {
-      const mockPoint = getRandomMockPoints();
-      if (!uniqueIds.has(mockPoint.id)) {
-        uniqueIds.add(mockPoint.id);
-        points.push(mockPoint);
-      }
-    }
-
-    return points;
   }
 
   get destinations() {
@@ -53,6 +29,24 @@ export default class PointsModel extends Observable {
 
   get points() {
     return this.#points;
+  }
+
+  async init() {
+    try {
+      const [points, destinations, offers] = await Promise.all([
+        this.#pointsApiService.points,
+        this.#pointsApiService.destinations,
+        this.#pointsApiService.offers
+      ]);
+
+      this.#points = points.map(this.#adaptToClient);
+      this.#destinations = destinations;
+      this.#offers = offers;
+    } catch (err) {
+      this.#points = [];
+      this.#destinations = [];
+      this.#offers = [];
+    }
   }
 
   updatePoint(updateType, update) {
