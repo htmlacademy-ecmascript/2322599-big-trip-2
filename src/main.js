@@ -38,10 +38,12 @@ const initApp = () => {
 
   boardPresenter.setAddNewPointButton(addNewPointButtonComponent);
 
-  render(addNewPointButtonComponent, tripMainContainer);
   filterPresenter.init();
   boardPresenter.init();
-  pointsModel.init();
+  pointsModel.init()
+    .finally(() => {
+      render(addNewPointButtonComponent, tripMainContainer);
+    });
 };
 
 initApp();
