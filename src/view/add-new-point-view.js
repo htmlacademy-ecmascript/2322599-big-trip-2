@@ -214,29 +214,16 @@ export default class AddNewPointView extends AbstractStatefulView {
 
     const datalistOptions = Array.from(this.element.querySelector('#destination-list-1').options);
     const isValidDestination = datalistOptions.some((option) => option.value === destinationInput.value);
-
-    const hasValidDates = this._state.dateFrom && this._state.dateTo;
-
+    const hasValidDates = startTimeInput.value && endTimeInput.value;
     const price = parseInt(priceInput.value, 10);
     const isValidPrice = !isNaN(price) && price > 0;
 
     if (!isValidDestination || !hasValidDates || !isValidPrice) {
-      if (!isValidDestination) {
-        destinationInput.style.borderColor = 'red';
-      }
-      if (!hasValidDates) {
-        startTimeInput.style.borderColor = 'red';
-        endTimeInput.style.borderColor = 'red';
-      }
-      if (!isValidPrice) {
-        priceInput.style.borderColor = 'red';
-      }
       return;
     }
 
     this.#onFormSubmit(AddNewPointView.parseStateToPoint(this._state));
   };
-
 
   #typeToggleHandler = (evt) => {
     evt.preventDefault();
