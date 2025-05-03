@@ -64,7 +64,7 @@ function createEventTypeItems(currentType) {
   ).join('');
 }
 
-function createAddNewPointTemplate(point, destination, offersList) {
+function createAddNewPointTemplate(point, destination, offersList, destinations) {
   const { dateFrom, dateTo, offers, type, basePrice } = point;
 
   const formattedStartDate = dateFrom ? formatDate(dateFrom, 'date') : '';
@@ -95,12 +95,7 @@ function createAddNewPointTemplate(point, destination, offersList) {
                     </label>
                     <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination ? he.encode(destination.name) : ''}" list="destination-list-1" required>
                     <datalist id="destination-list-1">
-                      <option value="Moscow"></option>
-                      <option value="Rostov-on-Don"></option>
-                      <option value="Irkutsk"></option>
-                      <option value="Sochi"></option>
-                      <option value="Krasnodar"></option>
-                      <option value="Kaliningrad"></option>
+                      ${destinations.map((dest) => `<option value="${he.encode(dest.name)}"></option>`).join('')}
                     </datalist>
                   </div>
 
@@ -167,7 +162,7 @@ export default class AddNewPointView extends AbstractStatefulView {
   }
 
   get template() {
-    return createAddNewPointTemplate(this._state, this.#destination, this.#offersList);
+    return createAddNewPointTemplate(this._state, this.#destination, this.#offersList, this.#pointsModel.destinations);
   }
 
   removeElement() {
