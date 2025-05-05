@@ -65,7 +65,7 @@ function createEventTypeItems(currentType) {
 }
 
 function createEditPointTemplate(point, destination, offersList, destinations) {
-  const { dateFrom, dateTo, offers, type, basePrice } = point;
+  const { dateFrom, dateTo, offers, type, basePrice, isDisabled, isSaving, isDeleting } = point;
 
   const formattedStartDate = formatDate(dateFrom, 'date');
   const formattedEndDate = formatDate(dateTo, 'date');
@@ -80,7 +80,7 @@ function createEditPointTemplate(point, destination, offersList, destinations) {
                       <span class="visually-hidden">Choose event type</span>
                       <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
                     </label>
-                    <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
+                    <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox" ${isDisabled ? 'disabled' : ''}>
 
                     <div class="event__type-list">
                       <fieldset class="event__type-group">
@@ -93,7 +93,7 @@ function createEditPointTemplate(point, destination, offersList, destinations) {
                     <label class="event__label  event__type-output" for="event-destination-1">
                       ${type}
                     </label>
-                    <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination ? he.encode(destination.name) : ''}" list="destination-list-1" required>
+                    <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination ? he.encode(destination.name) : ''}" list="destination-list-1" required ${isDisabled ? 'disabled' : ''}>
                     <datalist id="destination-list-1">
                       ${destinations.map((dest) => `<option value="${he.encode(dest.name)}"></option>`).join('')}
                     </datalist>
@@ -101,10 +101,10 @@ function createEditPointTemplate(point, destination, offersList, destinations) {
 
                   <div class="event__field-group  event__field-group--time">
                     <label class="visually-hidden" for="event-start-time-1">From</label>
-                    <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${formattedStartDate} ${formattedStartTime}">
+                    <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${formattedStartDate} ${formattedStartTime}" ${isDisabled ? 'disabled' : ''}>
                     &mdash;
                     <label class="visually-hidden" for="event-end-time-1">To</label>
-                    <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${formattedEndDate} ${formattedEndTime}">
+                    <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${formattedEndDate} ${formattedEndTime}" ${isDisabled ? 'disabled' : ''}>
                   </div>
 
                   <div class="event__field-group  event__field-group--price">
@@ -112,11 +112,11 @@ function createEditPointTemplate(point, destination, offersList, destinations) {
                       <span class="visually-hidden">Price</span>
                       &euro;
                     </label>
-                    <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value=${basePrice}>
+                    <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value=${basePrice} ${isDisabled ? 'disabled' : ''}>
                   </div>
-                <button class="event__save-btn btn btn--blue" type="submit">Save</button>
-                <button class="event__reset-btn btn" type="reset">Delete</button>
-                <button class="event__rollup-btn" type="button">
+                <button class="event__save-btn btn btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>${isSaving ? 'Saving...' : 'Save'}</button>
+                <button class="event__reset-btn btn" type="reset" ${isDisabled ? 'disabled' : ''}>${isDeleting ? 'Deleting...' : 'Delete'}</button>
+                <button class="event__rollup-btn" type="button" ${isDisabled ? 'disabled' : ''}>
                   <span class="visually-hidden">Open event</span>
                 </button>
                 </header>
@@ -375,10 +375,19 @@ export default class EditPointView extends AbstractStatefulView {
   }
 
   static parsePointToState(point) {
-    return { ...point };
+    return {
+      ...point,
+      isDisabled: false,
+      isSaving: false,
+      isDeleting: false,
+    };
   }
 
   static parseStateToPoint(state) {
-    return { ...state };
+    const point = { ...state };
+    delete point.isDisabled;
+    delete point.isSaving;
+    delete point.isDeleting;
+    return point;
   }
 }

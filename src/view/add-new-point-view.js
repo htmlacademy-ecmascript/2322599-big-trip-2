@@ -65,7 +65,7 @@ function createEventTypeItems(currentType) {
 }
 
 function createAddNewPointTemplate(point, destination, offersList, destinations) {
-  const { dateFrom, dateTo, offers, type, basePrice } = point;
+  const { dateFrom, dateTo, offers, type, basePrice, isDisabled, isSaving } = point;
 
   const formattedStartDate = dateFrom ? formatDate(dateFrom, 'date') : '';
   const formattedEndDate = dateTo ? formatDate(dateTo, 'date') : '';
@@ -80,7 +80,7 @@ function createAddNewPointTemplate(point, destination, offersList, destinations)
                       <span class="visually-hidden">Choose event type</span>
                       <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
                     </label>
-                    <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
+                    <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox" ${isDisabled ? 'disabled' : ''}>
 
                     <div class="event__type-list">
                       <fieldset class="event__type-group">
@@ -93,7 +93,7 @@ function createAddNewPointTemplate(point, destination, offersList, destinations)
                     <label class="event__label  event__type-output" for="event-destination-1">
                       ${type}
                     </label>
-                    <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination ? he.encode(destination.name) : ''}" list="destination-list-1" required>
+                    <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination ? he.encode(destination.name) : ''}" list="destination-list-1" required ${isDisabled ? 'disabled' : ''}>
                     <datalist id="destination-list-1">
                       ${destinations.map((dest) => `<option value="${he.encode(dest.name)}"></option>`).join('')}
                     </datalist>
@@ -101,10 +101,10 @@ function createAddNewPointTemplate(point, destination, offersList, destinations)
 
                   <div class="event__field-group  event__field-group--time">
                     <label class="visually-hidden" for="event-start-time-1">From</label>
-                    <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${formattedStartDate} ${formattedStartTime}">
+                    <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${formattedStartDate} ${formattedStartTime}" ${isDisabled ? 'disabled' : ''}>
                     &mdash;
                     <label class="visually-hidden" for="event-end-time-1">To</label>
-                    <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${formattedEndDate} ${formattedEndTime}">
+                    <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${formattedEndDate} ${formattedEndTime}" ${isDisabled ? 'disabled' : ''}>
                   </div>
 
                   <div class="event__field-group  event__field-group--price">
@@ -116,11 +116,12 @@ function createAddNewPointTemplate(point, destination, offersList, destinations)
                            id="event-price-1"
                            type="number"
                            name="event-price"
-                           value="${basePrice}">
+                           value="${basePrice}"
+                           ${isDisabled ? 'disabled' : ''}>
                   </div>
 
-                  <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-                  <button class="event__reset-btn" type="reset">Cancel</button>
+                  <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>${isSaving ? 'Saving...' : 'Save'}</button>
+                  <button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>Cancel</button>
                 </header>
 
                 <section class="event__details">
@@ -371,10 +372,17 @@ export default class AddNewPointView extends AbstractStatefulView {
   }
 
   static parsePointToState(point) {
-    return { ...point };
+    return {
+      ...point,
+      isDisabled: false,
+      isSaving: false,
+    };
   }
 
   static parseStateToPoint(state) {
-    return { ...state };
+    const point = { ...state };
+    delete point.isDisabled;
+    delete point.isSaving;
+    return point;
   }
 }
