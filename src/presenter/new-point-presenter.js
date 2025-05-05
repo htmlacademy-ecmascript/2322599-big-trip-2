@@ -27,7 +27,8 @@ export default class NewPointPresenter {
       dateTo: new Date(),
       destination: null,
       offers: [],
-      type: 'flight'
+      type: 'flight',
+      isFavorite: false
     };
 
     this.#addNewPointComponent = new AddNewPointView({
