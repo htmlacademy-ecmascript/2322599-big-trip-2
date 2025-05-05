@@ -34,10 +34,14 @@ export default class PointsModel extends Observable {
 
   async init() {
     try {
+      const pointsPromise = this.#pointsApiService.points;
+      const destinationsPromise = this.#pointsApiService.destinations;
+      const offersPromise = this.#pointsApiService.offers;
+
       const [points, destinations, offers] = await Promise.all([
-        this.#pointsApiService.points,
-        this.#pointsApiService.destinations,
-        this.#pointsApiService.offers
+        pointsPromise,
+        destinationsPromise,
+        offersPromise
       ]);
 
       this.#points = points.map(this.#adaptToClient);
@@ -47,6 +51,7 @@ export default class PointsModel extends Observable {
       this.#points = [];
       this.#destinations = [];
       this.#offers = [];
+      throw new Error('Failed to load data');
     }
     this._notify(UpdateType.INIT);
   }

@@ -8,12 +8,6 @@ import NewPointPresenter from './new-point-presenter.js';
 import { sortByDay, sortByTime, sortByPrice } from '../utils/utils.js';
 import { filter } from '../utils/filter.js';
 import { SortType, UpdateType, UserAction, FilterType } from '../const.js';
-import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
-
-const TimeLimit = {
-  LOWER_LIMIT: 350,
-  UPPER_LIMIT: 1000,
-};
 
 export default class BoardPresenter {
   #boardContainer = null;
@@ -22,25 +16,20 @@ export default class BoardPresenter {
   #sortComponent = null;
   #noPointComponent = null;
   #loadingComponent = new LoadingView();
-
+  #eventListComponent = new EventListView();
   #pointPresenters = new Map();
   #currentSortType = SortType.DAY;
   #filterType = FilterType.EVERYTHING;
   #isLoading = true;
-
-  #eventListComponent = new EventListView();
   #newPointPresenter = null;
   #addNewPointButtonComponent = null;
+  #uiBlocker = null;
 
-  #uiBlocker = new UiBlocker({
-    lowerLimit: TimeLimit.LOWER_LIMIT,
-    upperLimit: TimeLimit.UPPER_LIMIT
-  });
-
-  constructor({ boardContainer, pointsModel, filterModel, addNewPointButtonComponent }) {
+  constructor({ boardContainer, pointsModel, filterModel, uiBlocker, addNewPointButtonComponent }) {
     this.#boardContainer = boardContainer;
     this.#pointsModel = pointsModel;
     this.#filterModel = filterModel;
+    this.#uiBlocker = uiBlocker;
     this.#addNewPointButtonComponent = addNewPointButtonComponent;
 
     this.#pointsModel.addObserver(this.#handleModelEvent);
@@ -102,31 +91,24 @@ export default class BoardPresenter {
   #handleViewAction = async (actionType, updateType, update) => {
     this.#uiBlocker.block();
 
-    switch (actionType) {
-      case UserAction.UPDATE_POINT:
-        this.#pointPresenters.get(update.id).setSaving();
-        try {
+    try {
+      switch (actionType) {
+        case UserAction.UPDATE_POINT:
+          this.#pointPresenters.get(update.id).setSaving();
           await this.#pointsModel.updatePoint(updateType, update);
-        } catch (err) {
-          this.#pointPresenters.get(update.id).setAborting();
-        }
-        break;
-      case UserAction.ADD_POINT:
-        this.#newPointPresenter.setSaving();
-        try {
+          break;
+        case UserAction.ADD_POINT:
+          this.#newPointPresenter.setSaving();
           await this.#pointsModel.addPoint(updateType, update);
-        } catch (err) {
-          this.#newPointPresenter.setAborting();
-        }
-        break;
-      case UserAction.DELETE_POINT:
-        this.#pointPresenters.get(update.id).setDeleting();
-        try {
+          break;
+        case UserAction.DELETE_POINT:
+          this.#pointPresenters.get(update.id).setDeleting();
           await this.#pointsModel.deletePoint(updateType, update);
-        } catch (err) {
-          this.#pointPresenters.get(update.id).setAborting();
-        }
-        break;
+          break;
+      }
+    } catch {
+      this.#pointPresenters.get(update.id)?.setAborting();
+      this.#newPointPresenter?.setAborting();
     }
 
     this.#uiBlocker.unblock();
@@ -235,6 +217,6 @@ export default class BoardPresenter {
 
     this.#renderSort();
     render(this.#eventListComponent, this.#boardContainer);
-    this.#renderPoints(0, pointCount);
+    this.#renderPoints();
   }
 }

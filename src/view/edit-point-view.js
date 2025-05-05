@@ -115,7 +115,7 @@ function createEditPointTemplate(point, destination, offersList, destinations) {
                     <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value=${basePrice} ${isDisabled ? 'disabled' : ''}>
                   </div>
                 <button class="event__save-btn btn btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>${isSaving ? 'Saving...' : 'Save'}</button>
-                <button class="event__reset-btn btn" type="reset" ${isDisabled ? 'disabled' : ''}>${isDeleting ? 'Deleting...' : 'Delete'}</button>
+                <button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>${isDeleting ? 'Deleting...' : 'Delete'}</button>
                 <button class="event__rollup-btn" type="button" ${isDisabled ? 'disabled' : ''}>
                   <span class="visually-hidden">Open event</span>
                 </button>
