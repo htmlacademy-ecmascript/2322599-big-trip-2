@@ -232,6 +232,7 @@ export default class EditPointView extends AbstractStatefulView {
         dateTo: endTimeInput.value ? this._state.dateTo : null,
         basePrice: priceInput.value ? parseInt(priceInput.value, 10) : 0
       });
+      this.shake();
       return;
     }
 

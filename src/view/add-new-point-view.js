@@ -220,6 +220,7 @@ export default class AddNewPointView extends AbstractStatefulView {
     const isValidPrice = !isNaN(price) && price > 0;
 
     if (!isValidDestination || !hasValidDates || !isValidPrice) {
+      this.shake();
       return;
     }
 
