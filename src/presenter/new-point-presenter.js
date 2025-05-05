@@ -55,6 +55,13 @@ export default class NewPointPresenter {
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   }
 
+  setSaving() {
+    this.#addNewPointComponent.updateElement({
+      isDisabled: true,
+      isSaving: true,
+    });
+  }
+
   #handleFormSubmit = (point) => {
     const destination = this.#pointsModel.getDestinationById(point.destination);
     if (!destination || !point.dateFrom || !point.dateTo || point.basePrice <= 0) {
@@ -66,7 +73,6 @@ export default class NewPointPresenter {
       UpdateType.MINOR,
       point
     );
-    this.destroy();
   };
 
   #handleCancelClick = () => {
