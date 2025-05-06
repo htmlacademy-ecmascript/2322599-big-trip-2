@@ -27,7 +27,8 @@ export default class NewPointPresenter {
       dateTo: new Date(),
       destination: null,
       offers: [],
-      type: 'flight'
+      type: 'flight',
+      isFavorite: false
     };
 
     this.#addNewPointComponent = new AddNewPointView({
@@ -54,6 +55,13 @@ export default class NewPointPresenter {
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   }
 
+  setSaving() {
+    this.#addNewPointComponent.updateElement({
+      isDisabled: true,
+      isSaving: true,
+    });
+  }
+
   #handleFormSubmit = (point) => {
     const destination = this.#pointsModel.getDestinationById(point.destination);
     if (!destination || !point.dateFrom || !point.dateTo || point.basePrice <= 0) {
@@ -65,7 +73,6 @@ export default class NewPointPresenter {
       UpdateType.MINOR,
       point
     );
-    this.destroy();
   };
 
   #handleCancelClick = () => {
@@ -78,4 +85,16 @@ export default class NewPointPresenter {
       this.destroy();
     }
   };
+
+  setAborting() {
+    const resetFormState = () => {
+      this.#addNewPointComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this.#addNewPointComponent.shake(resetFormState);
+  }
 }

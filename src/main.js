@@ -4,18 +4,31 @@ import PointsModel from './model/points-model.js';
 import FilterModel from './model/filter-model.js';
 import AddNewPointButtonView from './view/add-new-point-button-view.js';
 import { render } from './framework/render.js';
+import PointsApiService from './points-api-service.js';
+import UiBlocker from './framework/ui-blocker/ui-blocker.js';
 
-const initApp = () => {
+const AUTHORIZATION = 'Basic katrinn01234sa2j';
+const END_POINT = 'https://22.objects.htmlacademy.pro/big-trip';
+
+const initApp = async () => {
   const filtersContainer = document.querySelector('.trip-controls__filters');
   const eventsContainer = document.querySelector('.trip-events');
   const tripMainContainer = document.querySelector('.trip-main');
-  const pointsModel = new PointsModel();
+
+  const pointsApiService = new PointsApiService(END_POINT, AUTHORIZATION);
+  const pointsModel = new PointsModel({ pointsApiService });
   const filterModel = new FilterModel();
+
+  const uiBlocker = new UiBlocker({
+    lowerLimit: 350,
+    upperLimit: 1000
+  });
 
   const boardPresenter = new BoardPresenter({
     boardContainer: eventsContainer,
     pointsModel,
-    filterModel
+    filterModel,
+    uiBlocker
   });
 
   const filterPresenter = new FilterPresenter({
@@ -30,9 +43,18 @@ const initApp = () => {
 
   boardPresenter.setAddNewPointButton(addNewPointButtonComponent);
 
-  render(addNewPointButtonComponent, tripMainContainer);
+  uiBlocker.block();
   filterPresenter.init();
   boardPresenter.init();
+
+  try {
+    await pointsModel.init();
+    render(addNewPointButtonComponent, tripMainContainer);
+  } catch {
+    uiBlocker.unblock();
+    return;
+  }
+  uiBlocker.unblock();
 };
 
 initApp();

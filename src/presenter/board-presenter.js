@@ -2,6 +2,7 @@ import { render, RenderPosition, remove } from '../framework/render.js';
 import EventListView from '../view/event-list-view.js';
 import NoPointView from '../view/no-point-view.js';
 import SortView from '../view/sort-view.js';
+import LoadingView from '../view/loading-view.js';
 import PointPresenter from './point-presenter.js';
 import NewPointPresenter from './new-point-presenter.js';
 import { sortByDay, sortByTime, sortByPrice } from '../utils/utils.js';
@@ -14,19 +15,21 @@ export default class BoardPresenter {
   #filterModel = null;
   #sortComponent = null;
   #noPointComponent = null;
-
+  #loadingComponent = new LoadingView();
+  #eventListComponent = new EventListView();
   #pointPresenters = new Map();
   #currentSortType = SortType.DAY;
   #filterType = FilterType.EVERYTHING;
-
-  #eventListComponent = new EventListView();
+  #isLoading = true;
   #newPointPresenter = null;
   #addNewPointButtonComponent = null;
+  #uiBlocker = null;
 
-  constructor({ boardContainer, pointsModel, filterModel, addNewPointButtonComponent }) {
+  constructor({ boardContainer, pointsModel, filterModel, uiBlocker, addNewPointButtonComponent }) {
     this.#boardContainer = boardContainer;
     this.#pointsModel = pointsModel;
     this.#filterModel = filterModel;
+    this.#uiBlocker = uiBlocker;
     this.#addNewPointButtonComponent = addNewPointButtonComponent;
 
     this.#pointsModel.addObserver(this.#handleModelEvent);
@@ -85,18 +88,30 @@ export default class BoardPresenter {
     this.#addNewPointButtonComponent = buttonComponent;
   }
 
-  #handleViewAction = (actionType, updateType, update) => {
-    switch (actionType) {
-      case UserAction.UPDATE_POINT:
-        this.#pointsModel.updatePoint(updateType, update);
-        break;
-      case UserAction.ADD_POINT:
-        this.#pointsModel.addPoint(updateType, update);
-        break;
-      case UserAction.DELETE_POINT:
-        this.#pointsModel.deletePoint(updateType, update);
-        break;
+  #handleViewAction = async (actionType, updateType, update) => {
+    this.#uiBlocker.block();
+
+    try {
+      switch (actionType) {
+        case UserAction.UPDATE_POINT:
+          this.#pointPresenters.get(update.id).setSaving();
+          await this.#pointsModel.updatePoint(updateType, update);
+          break;
+        case UserAction.ADD_POINT:
+          this.#newPointPresenter.setSaving();
+          await this.#pointsModel.addPoint(updateType, update);
+          break;
+        case UserAction.DELETE_POINT:
+          this.#pointPresenters.get(update.id).setDeleting();
+          await this.#pointsModel.deletePoint(updateType, update);
+          break;
+      }
+    } catch {
+      this.#pointPresenters.get(update.id)?.setAborting();
+      this.#newPointPresenter?.setAborting();
     }
+
+    this.#uiBlocker.unblock();
   };
 
   #handleModelEvent = (updateType, data) => {
@@ -112,8 +127,17 @@ export default class BoardPresenter {
         this.#clearBoard({ resetSortType: true });
         this.#renderBoard();
         break;
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
+        this.#renderBoard();
+        break;
     }
   };
+
+  #renderLoading() {
+    render(this.#loadingComponent, this.#eventListComponent.element, RenderPosition.AFTERBEGIN);
+  }
 
   #handleSortTypeChange = (sortType) => {
     if (this.#currentSortType === sortType) {
@@ -164,6 +188,7 @@ export default class BoardPresenter {
     this.#pointPresenters.clear();
 
     remove(this.#sortComponent);
+    remove(this.#loadingComponent);
 
     if (this.#noPointComponent) {
       remove(this.#noPointComponent);
@@ -177,6 +202,11 @@ export default class BoardPresenter {
   #renderBoard() {
     render(this.#eventListComponent, this.#boardContainer);
 
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
+
     const points = this.points;
     const pointCount = points.length;
 
@@ -187,7 +217,6 @@ export default class BoardPresenter {
 
     this.#renderSort();
     render(this.#eventListComponent, this.#boardContainer);
-    this.#renderPoints(0, pointCount);
+    this.#renderPoints();
   }
 }
-
