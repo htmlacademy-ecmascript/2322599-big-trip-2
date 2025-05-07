@@ -1,5 +1,6 @@
 import FilterPresenter from './presenter/filter-presenter.js';
 import BoardPresenter from './presenter/board-presenter.js';
+import TripInfoPresenter from './presenter/trip-info-presenter.js';
 import PointsModel from './model/points-model.js';
 import FilterModel from './model/filter-model.js';
 import AddNewPointButtonView from './view/add-new-point-button-view.js';
@@ -37,6 +38,11 @@ const initApp = async () => {
     pointsModel
   });
 
+  const tripInfoPresenter = new TripInfoPresenter({
+    tripMainContainer,
+    pointsModel
+  });
+
   const addNewPointButtonComponent = new AddNewPointButtonView({
     onClick: () => boardPresenter.createPoint()
   });
@@ -46,6 +52,7 @@ const initApp = async () => {
   uiBlocker.block();
   filterPresenter.init();
   boardPresenter.init();
+  tripInfoPresenter.init();
 
   try {
     await pointsModel.init();
