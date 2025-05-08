@@ -9,7 +9,7 @@ import PointsApiService from './points-api-service.js';
 import UiBlocker from './framework/ui-blocker/ui-blocker.js';
 
 const AUTHORIZATION = 'Basic katrinn01234sa2j';
-const END_POINT = 'https://22.objects.htmlacademy.pro/big-trip';
+const END_POINT = 'https://23.objects.htmlacademy.pro/big-trip';
 
 const initApp = async () => {
   const filtersContainer = document.querySelector('.trip-controls__filters');
