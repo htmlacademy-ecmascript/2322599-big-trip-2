@@ -10,17 +10,26 @@ const Method = {
 export default class PointsApiService extends ApiService {
   get points() {
     return this._load({ url: 'points' })
-      .then(ApiService.parseResponse);
+      .then(ApiService.parseResponse)
+      .catch((err) => {
+        throw new Error('Failed to load latest route information');
+      });
   }
 
   get destinations() {
     return this._load({ url: 'destinations' })
-      .then(ApiService.parseResponse);
+      .then(ApiService.parseResponse)
+      .catch((err) => {
+        throw new Error('Failed to load latest route information');
+      });
   }
 
   get offers() {
     return this._load({ url: 'offers' })
-      .then(ApiService.parseResponse);
+      .then(ApiService.parseResponse)
+      .catch((err) => {
+        throw new Error('Failed to load latest route information');
+      });
   }
 
   async updatePoint(point) {

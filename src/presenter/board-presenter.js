@@ -132,6 +132,11 @@ export default class BoardPresenter {
         remove(this.#loadingComponent);
         this.#renderBoard();
         break;
+      case UpdateType.ERROR:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
+        this.#renderNoPoints('Failed to load latest route information');
+        break;
     }
   };
 
@@ -174,13 +179,15 @@ export default class BoardPresenter {
     this.points.forEach((point) => this.#renderPoint(point));
   }
 
-  #renderNoPoints() {
+  #renderNoPoints(message = null) {
+    this.#eventListComponent.element.innerHTML = '';
     this.#noPointComponent = new NoPointView({
-      filterType: this.#filterType
+      message,
+      filterType: message ? null : this.#filterType
     });
-
     render(this.#noPointComponent, this.#eventListComponent.element, RenderPosition.AFTERBEGIN);
   }
+
 
   #clearBoard({ resetSortType = false } = {}) {
     this.#newPointPresenter.destroy();
