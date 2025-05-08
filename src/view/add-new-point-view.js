@@ -64,7 +64,7 @@ function createEventTypeItems(currentType) {
   ).join('');
 }
 
-function createAddNewPointTemplate(point, destination, offersList, destinations) {
+function createNewPointTemplate(point, destination, offersList, destinations) {
   const { dateFrom, dateTo, offers, type, basePrice, isDisabled, isSaving } = point;
 
   const formattedStartDate = dateFrom ? formatDate(dateFrom, 'date') : '';
@@ -163,7 +163,7 @@ export default class AddNewPointView extends AbstractStatefulView {
   }
 
   get template() {
-    return createAddNewPointTemplate(this._state, this.#destination, this.#offersList, this.#pointsModel.destinations);
+    return createNewPointTemplate(this._state, this.#destination, this.#offersList, this.#pointsModel.destinations);
   }
 
   removeElement() {
