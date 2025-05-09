@@ -47,13 +47,13 @@ function createOfferDetailsTemplate(offersList, offers, isDisabled) {
 
 // Создание шаблона блока с описанием направления
 function createDestinationTemplate(destination) {
-  if (!destination) {
+
+  if (!destination || !destination.description) {
     return '';
   }
 
-  const description = destination.description ?
-    `<h3 class="event__section-title event__section-title--destination">Destination</h3>
-    <p class="event__destination-description">${destination.description}</p>` : '';
+  const description = `<h3 class="event__section-title event__section-title--destination">Destination</h3>
+    <p class="event__destination-description">${destination.description}</p>`;
 
   const pictures = (destination.pictures && destination.pictures.length > 0) ?
     `<div class="event__photos-container">
@@ -62,7 +62,7 @@ function createDestinationTemplate(destination) {
       </div>
     </div>` : '';
 
-  return description + pictures;
+  return `${description}${pictures}`;
 }
 
 // Создание шаблона типов событий
@@ -134,7 +134,7 @@ function createEditPointTemplate(point, destination, offersList, destinations) {
                 </header>
                 <section class="event__details">
                   ${offersList ? createOfferDetailsTemplate(offersList, offers, isDisabled) : ''}
-                  ${destination ? `
+                  ${destination && destination.description ? `
                     <section class="event__section event__section--destination">
                       ${createDestinationTemplate(destination)}
                     </section>` : ''}
