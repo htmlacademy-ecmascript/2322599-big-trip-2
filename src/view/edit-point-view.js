@@ -210,7 +210,7 @@ export default class EditPointView extends AbstractStatefulView {
     });
   };
 
-   // Обработчик клика по кнопке удаления
+  // Обработчик клика по кнопке удаления
   #formDeleteClickHandler = (evt) => {
     evt.preventDefault();
     this.#handleDeleteClick(EditPointView.parseStateToPoint(this._state));
@@ -340,7 +340,7 @@ export default class EditPointView extends AbstractStatefulView {
     }
   };
 
-   // Общий метод настройки календаря
+  // Общий метод настройки календаря
   #setDatepickerCommon(elementId, defaultDate, onChange, minDate = null, maxDate = null) {
     const input = this.element.querySelector(`#${elementId}`);
     if (!input) {
