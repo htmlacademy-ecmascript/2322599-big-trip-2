@@ -9,6 +9,7 @@ import { sortByDay, sortByTime, sortByPrice } from '../utils/utils.js';
 import { filter } from '../utils/filter.js';
 import { SortType, UpdateType, UserAction, FilterType } from '../const.js';
 
+// Презентер доски (основной экран приложения)
 export default class BoardPresenter {
   #boardContainer = null;
   #pointsModel = null;
@@ -32,9 +33,11 @@ export default class BoardPresenter {
     this.#uiBlocker = uiBlocker;
     this.#addNewPointButtonComponent = addNewPointButtonComponent;
 
+    // Подписка на изменения моделей
     this.#pointsModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
 
+    // Инициализация презентера новой точки
     this.#newPointPresenter = new NewPointPresenter({
       eventListContainer: this.#eventListComponent.element,
       pointsModel: this.#pointsModel,
@@ -43,11 +46,13 @@ export default class BoardPresenter {
     });
   }
 
+  // Получение отсортированных и отфильтрованных точек
   get points() {
     this.#filterType = this.#filterModel.filter;
     const points = this.#pointsModel.points;
     const filteredPoints = filter[this.#filterType](points);
 
+    // Сортировка в зависимости от выбранного типа
     switch (this.#currentSortType) {
       case SortType.DAY:
         return [...filteredPoints].sort(sortByDay);
@@ -59,21 +64,25 @@ export default class BoardPresenter {
     return filteredPoints;
   }
 
+  // Инициализация презентера
   init() {
     this.#renderBoard();
   }
 
+  // Обработчик смены режима
   #handleModeChange = () => {
     this.#newPointPresenter.destroy();
     this.#pointPresenters.forEach((presenter) => presenter.resetView());
   };
 
+  // Обработчик закрытия формы новой точки
   #handleNewPointFormClose = () => {
     if (this.#addNewPointButtonComponent) {
       this.#addNewPointButtonComponent.element.disabled = false;
     }
   };
 
+  // Создание новой точки
   createPoint() {
     this.#currentSortType = SortType.DAY;
     this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
@@ -84,10 +93,12 @@ export default class BoardPresenter {
     }
   }
 
+  // Установка кнопки добавления новой точки
   setAddNewPointButton(buttonComponent) {
     this.#addNewPointButtonComponent = buttonComponent;
   }
 
+  // Обработчик действий пользователя (обновление, добавление, удаление)
   #handleViewAction = async (actionType, updateType, update) => {
     this.#uiBlocker.block();
 
@@ -114,6 +125,7 @@ export default class BoardPresenter {
     this.#uiBlocker.unblock();
   };
 
+  // Обработчик событий модели
   #handleModelEvent = (updateType, data) => {
     switch (updateType) {
       case UpdateType.PATCH:
@@ -132,13 +144,20 @@ export default class BoardPresenter {
         remove(this.#loadingComponent);
         this.#renderBoard();
         break;
+      case UpdateType.ERROR:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
+        this.#renderNoPoints('Failed to load latest route information');
+        break;
     }
   };
 
+  // Рендер компонента загрузки
   #renderLoading() {
     render(this.#loadingComponent, this.#eventListComponent.element, RenderPosition.AFTERBEGIN);
   }
 
+  // Обработчик изменения типа сортировки
   #handleSortTypeChange = (sortType) => {
     if (this.#currentSortType === sortType) {
       return;
@@ -149,6 +168,7 @@ export default class BoardPresenter {
     this.#renderBoard();
   };
 
+  // Рендер компонента сортировки
   #renderSort() {
     this.#sortComponent = new SortView({
       currentSortType: this.#currentSortType,
@@ -158,6 +178,7 @@ export default class BoardPresenter {
     render(this.#sortComponent, this.#eventListComponent.element, RenderPosition.AFTERBEGIN);
   }
 
+  // Рендер одной точки маршрута
   #renderPoint(point) {
     const pointPresenter = new PointPresenter({
       eventListContainer: this.#eventListComponent.element,
@@ -170,18 +191,22 @@ export default class BoardPresenter {
     this.#pointPresenters.set(point.id, pointPresenter);
   }
 
+  // Рендер всех точек маршрута
   #renderPoints() {
     this.points.forEach((point) => this.#renderPoint(point));
   }
 
-  #renderNoPoints() {
+  // Рендер сообщения "Нет точек"
+  #renderNoPoints(message = null) {
+    this.#eventListComponent.element.innerHTML = '';
     this.#noPointComponent = new NoPointView({
-      filterType: this.#filterType
+      message,
+      filterType: message ? null : this.#filterType
     });
-
     render(this.#noPointComponent, this.#eventListComponent.element, RenderPosition.AFTERBEGIN);
   }
 
+  // Очистка доски
   #clearBoard({ resetSortType = false } = {}) {
     this.#newPointPresenter.destroy();
     this.#pointPresenters.forEach((presenter) => presenter.destroy());
@@ -199,6 +224,7 @@ export default class BoardPresenter {
     }
   }
 
+  // Основной рендер доски
   #renderBoard() {
     render(this.#eventListComponent, this.#boardContainer);
 

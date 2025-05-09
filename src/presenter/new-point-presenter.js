@@ -2,6 +2,7 @@ import { remove, render, RenderPosition } from '../framework/render.js';
 import AddNewPointView from '../view/add-new-point-view.js';
 import { UserAction, UpdateType } from '../const.js';
 
+// Презентер формы добавления новой точки
 export default class NewPointPresenter {
   #eventListContainer = null;
   #handleDataChange = null;
@@ -16,11 +17,13 @@ export default class NewPointPresenter {
     this.#handleDestroy = onDestroy;
   }
 
+  // Инициализация формы
   init() {
     if (this.#addNewPointComponent !== null) {
       return;
     }
 
+    // Шаблон новой точки
     const blankPoint = {
       basePrice: 0,
       dateFrom: new Date(),
@@ -31,6 +34,7 @@ export default class NewPointPresenter {
       isFavorite: false
     };
 
+    // Создание компонента формы
     this.#addNewPointComponent = new AddNewPointView({
       point: blankPoint,
       destination: null,
@@ -40,10 +44,12 @@ export default class NewPointPresenter {
       pointsModel: this.#pointsModel
     });
 
+    // Рендер и подписка на события
     render(this.#addNewPointComponent, this.#eventListContainer, RenderPosition.AFTERBEGIN);
     document.addEventListener('keydown', this.#escKeyDownHandler);
   }
 
+  // Уничтожение формы
   destroy() {
     if (this.#addNewPointComponent === null) {
       return;
@@ -55,6 +61,7 @@ export default class NewPointPresenter {
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   }
 
+  // Установка состояния "Сохранение"
   setSaving() {
     this.#addNewPointComponent.updateElement({
       isDisabled: true,
@@ -62,6 +69,7 @@ export default class NewPointPresenter {
     });
   }
 
+  // Обработчик отправки формы
   #handleFormSubmit = (point) => {
     const destination = this.#pointsModel.getDestinationById(point.destination);
     if (!destination || !point.dateFrom || !point.dateTo || point.basePrice <= 0) {
@@ -75,10 +83,12 @@ export default class NewPointPresenter {
     );
   };
 
+  // Обработчик отмены
   #handleCancelClick = () => {
     this.destroy();
   };
 
+  // Обработчик нажатия Esc
   #escKeyDownHandler = (evt) => {
     if (evt.key === 'Escape' || evt.key === 'Esc') {
       evt.preventDefault();
@@ -86,6 +96,7 @@ export default class NewPointPresenter {
     }
   };
 
+  // Установка состояния "Ошибка"
   setAborting() {
     const resetFormState = () => {
       this.#addNewPointComponent.updateElement({
