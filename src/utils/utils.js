@@ -46,13 +46,17 @@ const calculateDuration = (dateFrom, dateTo) => {
 };
 
 // Проверка, является ли точка прошедшей
-function isPointPast(dateFrom) {
-  return dateFrom && dayjs(dateFrom).isBefore(dayjs(), 'minute');
+function isPointPast(dateTo) {
+  return dateTo && dayjs(dateTo).isBefore(dayjs(), 'minute');
 }
 
 // Проверка, является ли точка текущей
-function isPointPresent(dateFrom) {
-  return dateFrom && dayjs(dateFrom).isSame(dayjs(), 'day') && dayjs(dateFrom).isAfter(dayjs().startOf('day'));
+function isPointPresent(dateFrom, dateTo) {
+  if (!dateFrom || !dateTo) {
+    return false;
+  }
+  const now = dayjs();
+  return now.isAfter(dateFrom) && now.isBefore(dateTo);
 }
 
 // Проверка, является ли точка будущей
