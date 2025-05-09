@@ -20,7 +20,7 @@ export default class TripInfoPresenter {
 
   // Получение списка направлений
   #getDestinations() {
-    const points = this.#pointsModel.points;
+    const points = [...this.#pointsModel.points].sort((a, b) => new Date(a.dateFrom) - new Date(b.dateFrom));
     const destinations = [];
 
     points.forEach((point) => {
@@ -35,7 +35,7 @@ export default class TripInfoPresenter {
 
   // Получение дат начала и окончания путешествия
   #getDates() {
-    const points = this.#pointsModel.points;
+    const points = [...this.#pointsModel.points].sort((a, b) => new Date(a.dateFrom) - new Date(b.dateFrom));
     if (points.length === 0) {
       return { start: null, end: null };
     }
