@@ -1,5 +1,6 @@
 import ApiService from './framework/api-service.js';
 
+// Перечисление методов HTTP
 const Method = {
   GET: 'GET',
   PUT: 'PUT',
@@ -7,31 +8,36 @@ const Method = {
   DELETE: 'DELETE',
 };
 
+// Класс для работы с API точек маршрута
 export default class PointsApiService extends ApiService {
+  // Получение точек маршрута
   get points() {
     return this._load({ url: 'points' })
       .then(ApiService.parseResponse)
-      .catch((err) => {
+      .catch(() => {
         throw new Error('Failed to load latest route information');
       });
   }
 
+  // Получение списка направлений
   get destinations() {
     return this._load({ url: 'destinations' })
       .then(ApiService.parseResponse)
-      .catch((err) => {
+      .catch(() => {
         throw new Error('Failed to load latest route information');
       });
   }
 
+  // Получение списка предложений
   get offers() {
     return this._load({ url: 'offers' })
       .then(ApiService.parseResponse)
-      .catch((err) => {
+      .catch(() => {
         throw new Error('Failed to load latest route information');
       });
   }
 
+  // Обновление точки маршрута
   async updatePoint(point) {
     const response = await this._load({
       url: `points/${point.id}`,
@@ -44,6 +50,7 @@ export default class PointsApiService extends ApiService {
     return parsedResponse;
   }
 
+  // Добавление новой точки маршрута
   async addPoint(point) {
     const response = await this._load({
       url: 'points',
@@ -56,6 +63,7 @@ export default class PointsApiService extends ApiService {
     return parsedResponse;
   }
 
+  // Удаление точки маршрута
   async deletePoint(point) {
     const response = await this._load({
       url: `points/${point.id}`,
@@ -65,6 +73,7 @@ export default class PointsApiService extends ApiService {
     return response;
   }
 
+  // Адаптация данных точки для сервера
   #adaptToServer(point) {
     const adaptedPoint = {
       ...point,
@@ -74,6 +83,7 @@ export default class PointsApiService extends ApiService {
       'is_favorite': point.isFavorite,
     };
 
+    // Удаляем клиентские названия полей
     delete adaptedPoint.dateFrom;
     delete adaptedPoint.dateTo;
     delete adaptedPoint.basePrice;
