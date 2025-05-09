@@ -1,6 +1,7 @@
 import AbstractView from '../framework/view/abstract-view.js';
 import { formatDate } from '../utils/utils.js';
 
+// Функция создания шаблона информации о путешествии
 function createTripInfoTemplate({ destinations, dates, totalPrice }) {
   return `
     <section class="trip-main__trip-info  trip-info">
@@ -15,6 +16,7 @@ function createTripInfoTemplate({ destinations, dates, totalPrice }) {
   `;
 }
 
+// Функция формирования заголовка маршрута
 function getRouteTitle(destinations) {
   if (!destinations || destinations.length === 0) {
     return '';
@@ -27,6 +29,7 @@ function getRouteTitle(destinations) {
   return `${destinations[0]} &mdash; ... &mdash; ${destinations[destinations.length - 1]}`;
 }
 
+// Функция формирования текста дат
 function getDatesText(dates) {
   if (!dates || !dates.start || !dates.end) {
     return '';
@@ -41,6 +44,7 @@ function getDatesText(dates) {
   return `${formattedStart}&nbsp;&mdash;&nbsp;${formattedEnd}`;
 }
 
+// Класс представления информации о путешествии
 export default class TripInfoView extends AbstractView {
   #destinations = null;
   #dates = null;
@@ -53,6 +57,7 @@ export default class TripInfoView extends AbstractView {
     this.#totalPrice = totalPrice;
   }
 
+  // Геттер для получения шаблона
   get template() {
     return createTripInfoTemplate({
       destinations: this.#destinations,

@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
 
+// Форматы дат
 const DATE_FORMAT = 'DD/MM/YY';
 const TIME_FORMAT = 'HH:mm';
 const ALT_DATE_FORMAT = 'MMM DD';
@@ -7,6 +8,7 @@ const EDIT_FORMAT = 'DD/MM/YY HH:mm';
 const MINUTES_IN_HOUR = 60;
 const MINUTES_IN_DAY = 1440;
 
+// Форматирование даты
 function formatDate(date, formatType = 'default') {
   if (!date) {
     return '';
@@ -28,6 +30,7 @@ function formatDate(date, formatType = 'default') {
   }
 }
 
+// Расчет продолжительности
 const calculateDuration = (dateFrom, dateTo) => {
   const start = dayjs(dateFrom);
   const end = dayjs(dateTo);
@@ -42,22 +45,27 @@ const calculateDuration = (dateFrom, dateTo) => {
   return { days, hours, minutes };
 };
 
+// Проверка, является ли точка прошедшей
 function isPointPast(dateFrom) {
   return dateFrom && dayjs(dateFrom).isBefore(dayjs(), 'minute');
 }
 
+// Проверка, является ли точка текущей
 function isPointPresent(dateFrom) {
   return dateFrom && dayjs(dateFrom).isSame(dayjs(), 'day') && dayjs(dateFrom).isAfter(dayjs().startOf('day'));
 }
 
+// Проверка, является ли точка будущей
 function isPointFuture(dateFrom) {
   return dateFrom && dayjs(dateFrom).isAfter(dayjs(), 'minute');
 }
 
+// Сортировка по дате
 function sortByDay(taskA, taskB) {
   return new Date(taskA.dateFrom) - new Date(taskB.dateFrom);
 }
 
+// Сортировка по продолжительности
 function sortByTime(taskA, taskB) {
   const durationA = new Date(taskA.dateTo) - new Date(taskA.dateFrom);
   const durationB = new Date(taskB.dateTo) - new Date(taskB.dateFrom);
@@ -65,10 +73,12 @@ function sortByTime(taskA, taskB) {
   return durationB - durationA;
 }
 
+// Сортировка по цене
 function sortByPrice(taskA, taskB) {
   return taskB.basePrice - taskA.basePrice;
 }
 
+// Парсинг даты для flatpickr
 function parseDateForFlatpickr(date) {
   if (!date) {
     return null;
@@ -101,6 +111,7 @@ function parseDateForFlatpickr(date) {
   return null;
 }
 
+// Форматирование даты для flatpickr
 function formatDateForFlatpickr(date) {
   const dateObj = parseDateForFlatpickr(date);
 
@@ -113,8 +124,21 @@ function formatDateForFlatpickr(date) {
   return `${day}/${month}/${year} ${hours}:${minutes}`;
 }
 
+// Сравнение дат
 function isDatesEqual(dateA, dateB) {
   return (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB, 'minute');
 }
 
-export { formatDate, calculateDuration, isPointPast, isPointPresent, isPointFuture, sortByDay, sortByTime, sortByPrice, parseDateForFlatpickr, formatDateForFlatpickr, isDatesEqual };
+export {
+  formatDate,
+  calculateDuration,
+  isPointPast,
+  isPointPresent,
+  isPointFuture,
+  sortByDay,
+  sortByTime,
+  sortByPrice,
+  parseDateForFlatpickr,
+  formatDateForFlatpickr,
+  isDatesEqual
+};

@@ -1,5 +1,6 @@
 import AbstractView from '../framework/view/abstract-view.js';
 
+// Функция создания шаблона для одного элемента фильтра
 function createFilterItemTemplate(filter, currentFilterType) {
   const { type, count } = filter;
 
@@ -24,6 +25,7 @@ function createFilterItemTemplate(filter, currentFilterType) {
   );
 }
 
+// Функция создания шаблона для всех фильтров
 function createFiltersTemplate(filterItems, currentFilterType) {
   const filterItemsTemplate = filterItems
     .map((filter) => createFilterItemTemplate(filter, currentFilterType))
@@ -37,6 +39,7 @@ function createFiltersTemplate(filterItems, currentFilterType) {
   );
 }
 
+// Класс представления фильтров
 export default class FiltersView extends AbstractView {
   #filters = null;
   #currentFilterType = null;
@@ -48,13 +51,16 @@ export default class FiltersView extends AbstractView {
     this.#currentFilterType = currentFilterType;
     this.#handleFilterTypeChange = onFilterTypeChange;
 
+    // Добавление обработчика изменения типа фильтра
     this.element.addEventListener('change', this.#filterTypeChangeHandler);
   }
 
+  // Геттер для получения шаблона
   get template() {
     return createFiltersTemplate(this.#filters, this.#currentFilterType);
   }
 
+  // Обработчик изменения типа фильтра
   #filterTypeChangeHandler = (evt) => {
     evt.preventDefault();
     this.#handleFilterTypeChange(evt.target.value);

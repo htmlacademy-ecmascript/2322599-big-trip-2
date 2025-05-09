@@ -1,6 +1,7 @@
 import { formatDate, calculateDuration } from '../utils/utils.js';
 import AbstractView from '../framework/view/abstract-view.js';
 
+// Функция создания шаблона для дополнительных опций точки маршрута
 function createOffersTemplate(offersList, offers) {
   if (!offersList.offers) {
     return '';
@@ -8,6 +9,7 @@ function createOffersTemplate(offersList, offers) {
 
   const availableOffers = [];
 
+  // Фильтрация доступных опций
   offersList.offers.forEach((offer) => {
     if (offers.includes(offer.id)) {
       availableOffers.push(offer);
@@ -23,14 +25,17 @@ function createOffersTemplate(offersList, offers) {
   )).join('');
 }
 
+// Функция создания шаблона точки маршрута
 function createPointTemplate(point, destination, offersList) {
   const { dateFrom, dateTo, basePrice, type, isFavorite, offers } = point;
 
+  // Форматирование дат и времени
   const formattedStartDate = formatDate(dateFrom, 'alt');
   const formattedStartTime = formatDate(dateFrom, 'time');
   const formattedEndTime = formatDate(dateTo, 'time');
   const { days, hours, minutes } = calculateDuration(dateFrom, dateTo);
 
+  // Формирование текста продолжительности
   let durationText = '';
   if (days > 0) {
     durationText = `${days.toString().padStart(2, '0')}D ${hours.toString().padStart(2, '0')}H ${minutes.toString().padStart(2, '0')}M`;
@@ -40,6 +45,7 @@ function createPointTemplate(point, destination, offersList) {
     durationText = `${minutes}M`;
   }
 
+  // Кнопка избранное
   const favoriteClassName = isFavorite
     ? 'event__favorite-btn--active'
     : '';
@@ -79,6 +85,7 @@ function createPointTemplate(point, destination, offersList) {
             </li>`;
 }
 
+// Класс представления точки маршрута
 export default class PointView extends AbstractView {
   #point = null;
   #destination = null;
@@ -94,21 +101,26 @@ export default class PointView extends AbstractView {
     this.#onButtonClick = onButtonClick;
     this.#handleFavoriteClick = onFavoriteClick;
 
+    // Добавление обработчиков событий
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#buttonClickHandler);
     this.element.querySelector('.event__favorite-btn').addEventListener('click', this.#favoriteClickHandler);
   }
 
+  // Геттер для получения шаблона
   get template() {
     return createPointTemplate(this.#point, this.#destination, this.#offersList);
   }
 
+  // Обработчик клика по кнопке
   #buttonClickHandler = (evt) => {
     evt.preventDefault();
     this.#onButtonClick();
   };
 
+  // Обработчик клика по кнопке избранного
   #favoriteClickHandler = (evt) => {
     evt.preventDefault();
     this.#handleFavoriteClick();
   };
 }
+

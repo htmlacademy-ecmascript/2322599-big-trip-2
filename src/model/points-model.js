@@ -1,6 +1,7 @@
 import Observable from '../framework/observable.js';
 import { UpdateType } from '../const.js';
 
+// Модель для работы с точками маршрута
 export default class PointsModel extends Observable {
   #pointsApiService = null;
   #destinations = [];
@@ -12,28 +13,35 @@ export default class PointsModel extends Observable {
     this.#pointsApiService = pointsApiService;
   }
 
+  // Геттер для получения данных направлений
   get destinations() {
     return this.#destinations;
   }
 
+  // Получение направления по ID
   getDestinationById(id) {
     return this.#destinations.find((destination) => destination.id === id);
   }
 
+  // Геттер для получения данных дополнительных опций
   get offers() {
     return this.#offers;
   }
 
+  // Получение дополнительных опций по типу
   getOffersByType(type) {
     return this.#offers.find((offer) => offer.type === type);
   }
 
+  // Геттер для получения точек
   get points() {
     return this.#points;
   }
 
+  // Инициализация модели
   async init() {
     try {
+      // Параллельная загрузка точек, направлений и дополнительных опций
       const pointsPromise = this.#pointsApiService.points;
       const destinationsPromise = this.#pointsApiService.destinations;
       const offersPromise = this.#pointsApiService.offers;
@@ -44,11 +52,13 @@ export default class PointsModel extends Observable {
         offersPromise
       ]);
 
+      // Адаптация данных и уведомление об успешной загрузке
       this.#points = points.map(this.#adaptToClient);
       this.#destinations = destinations;
       this.#offers = offers;
       this._notify(UpdateType.INIT);
     } catch (err) {
+      // Очистка данных и уведомление об ошибке
       this.#points = [];
       this.#destinations = [];
       this.#offers = [];
@@ -56,6 +66,7 @@ export default class PointsModel extends Observable {
     }
   }
 
+  // Обновление точки маршрута
   async updatePoint(updateType, update) {
     const index = this.#points.findIndex((point) => point.id === update.id);
 
@@ -64,6 +75,7 @@ export default class PointsModel extends Observable {
     }
 
     try {
+      // Обновление на сервере и в локальном хранилище
       const response = await this.#pointsApiService.updatePoint(update);
       const updatedPoint = this.#adaptToClient(response);
 
@@ -79,6 +91,7 @@ export default class PointsModel extends Observable {
     }
   }
 
+  // Добавление новой точки маршрута
   async addPoint(updateType, update) {
     try {
       const response = await this.#pointsApiService.addPoint(update);
@@ -90,6 +103,7 @@ export default class PointsModel extends Observable {
     }
   }
 
+  // Удаление точки маршрута
   async deletePoint(updateType, update) {
     const index = this.#points.findIndex((point) => point.id === update.id);
 
@@ -109,6 +123,7 @@ export default class PointsModel extends Observable {
     }
   }
 
+  // Адаптация данных точки для клиента
   #adaptToClient(point) {
     const adaptedPoint = {
       ...point,
@@ -118,6 +133,7 @@ export default class PointsModel extends Observable {
       isFavorite: point['is_favorite'],
     };
 
+    // Удаление серверных названий полей
     delete adaptedPoint['date_from'];
     delete adaptedPoint['date_to'];
     delete adaptedPoint['base_price'];

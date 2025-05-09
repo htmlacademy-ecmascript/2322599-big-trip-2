@@ -6,6 +6,7 @@ import flatpickr from 'flatpickr';
 
 import 'flatpickr/dist/flatpickr.min.css';
 
+// Создание шаблона дополнительных опций
 function createOffersTemplate(offersList, offers) {
   if (!offersList || !offersList.offers) {
     return '';
@@ -23,6 +24,7 @@ function createOffersTemplate(offersList, offers) {
   ).join('');
 }
 
+// Создание шаблона блока с опциями
 function createOfferDetailsTemplate(offersList, offers) {
   const offersMarkup = createOffersTemplate(offersList, offers);
 
@@ -36,6 +38,7 @@ function createOfferDetailsTemplate(offersList, offers) {
   </div>`;
 }
 
+// Создание шаблона блока с описанием направления
 function createDestinationTemplate(destination) {
   if (!destination) {
     return '';
@@ -55,6 +58,7 @@ function createDestinationTemplate(destination) {
   return description + pictures;
 }
 
+// Создание шаблона типов событий
 function createEventTypeItems(currentType) {
   return EVENT_TYPES.map(({ type, label }) =>
     `<div class="event__type-item">
@@ -64,6 +68,7 @@ function createEventTypeItems(currentType) {
   ).join('');
 }
 
+// Создание шаблона формы добавления новой точки
 function createNewPointTemplate(point, destination, offersList, destinations) {
   const { dateFrom, dateTo, offers, type, basePrice, isDisabled, isSaving } = point;
 
@@ -136,6 +141,7 @@ function createNewPointTemplate(point, destination, offersList, destinations) {
           </li>`;
 }
 
+// Класс представления формы добавления новой точки
 export default class AddNewPointView extends AbstractStatefulView {
   #destination = null;
   #offersList = null;
@@ -162,10 +168,12 @@ export default class AddNewPointView extends AbstractStatefulView {
     this._restoreHandlers();
   }
 
+  // Геттер для получения шаблона
   get template() {
     return createNewPointTemplate(this._state, this.#destination, this.#offersList, this.#pointsModel.destinations);
   }
 
+  // Удаление элемента и календарей
   removeElement() {
     super.removeElement();
 
@@ -180,6 +188,7 @@ export default class AddNewPointView extends AbstractStatefulView {
     }
   }
 
+  // Восстановление обработчиков событий
   _restoreHandlers() {
     this.element.querySelector('.event--edit').addEventListener('submit', this.#formSubmitHandler);
     this.element.querySelector('.event__type-group').addEventListener('change', this.#typeToggleHandler);
@@ -192,6 +201,7 @@ export default class AddNewPointView extends AbstractStatefulView {
     this.#setDatepickerTo();
   }
 
+  // Обработчик изменения цены
   #priceChangeHandler = (evt) => {
     const price = parseInt(evt.target.value, 10);
     this._setState({
@@ -200,11 +210,13 @@ export default class AddNewPointView extends AbstractStatefulView {
     });
   };
 
+  // Обработчик клика по кнопке отмены
   #cancelClickHandler = (evt) => {
     evt.preventDefault();
     this.#onCancelClick();
   };
 
+  // Обработчик отправки формы
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
 
@@ -219,6 +231,7 @@ export default class AddNewPointView extends AbstractStatefulView {
     const price = parseInt(priceInput.value, 10);
     const isValidPrice = !isNaN(price) && price > 0;
 
+    // Валидация данных
     if (!isValidDestination || !hasValidDates || !isValidPrice) {
       this.shake();
       return;
@@ -227,6 +240,7 @@ export default class AddNewPointView extends AbstractStatefulView {
     this.#onFormSubmit(AddNewPointView.parseStateToPoint(this._state));
   };
 
+  // Обработчик изменения типа события
   #typeToggleHandler = (evt) => {
     evt.preventDefault();
     const selectedType = evt.target.value;
@@ -247,6 +261,7 @@ export default class AddNewPointView extends AbstractStatefulView {
     });
   };
 
+  // Обработчик изменения направления
   #destinationChangeHandler = (evt) => {
     evt.preventDefault();
     const selectedDestinationName = evt.target.value;
@@ -269,6 +284,7 @@ export default class AddNewPointView extends AbstractStatefulView {
     }
   };
 
+  // Обработчик изменения опций
   #offersChangeHandler = (evt) => {
     evt.preventDefault();
     if (!evt.target.classList.contains('event__offer-checkbox')) {
@@ -293,6 +309,7 @@ export default class AddNewPointView extends AbstractStatefulView {
     });
   };
 
+  // Обработчик изменения даты начала
   #dateFromChangeHandler = ([userDate]) => {
     this._setState({
       ...this._state,
@@ -305,6 +322,7 @@ export default class AddNewPointView extends AbstractStatefulView {
     }
   };
 
+  // Обработчик изменения даты окончания
   #dateToChangeHandler = ([userDate]) => {
     this._setState({
       ...this._state,
@@ -317,6 +335,7 @@ export default class AddNewPointView extends AbstractStatefulView {
     }
   };
 
+  // Общий метод настройки календаря
   #setDatepickerCommon(elementId, defaultDate, onChange, minDate = null, maxDate = null) {
     const input = this.element.querySelector(`#${elementId}`);
     if (!input) {
@@ -352,6 +371,7 @@ export default class AddNewPointView extends AbstractStatefulView {
     }
   }
 
+  // Настройка календаря для даты начала
   #setDatepickerFrom() {
     this.#setDatepickerCommon(
       'event-start-time-1',
@@ -362,6 +382,7 @@ export default class AddNewPointView extends AbstractStatefulView {
     );
   }
 
+  // Настройка календаря для даты окончания
   #setDatepickerTo() {
     this.#setDatepickerCommon(
       'event-end-time-1',
@@ -372,6 +393,7 @@ export default class AddNewPointView extends AbstractStatefulView {
     );
   }
 
+  // Преобразование точки в состояние
   static parsePointToState(point) {
     return {
       ...point,
@@ -380,6 +402,7 @@ export default class AddNewPointView extends AbstractStatefulView {
     };
   }
 
+  // Преобразование состояния в точку
   static parseStateToPoint(state) {
     const point = { ...state };
     delete point.isDisabled;

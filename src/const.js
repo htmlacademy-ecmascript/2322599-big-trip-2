@@ -1,3 +1,4 @@
+// Типы событий
 const EVENT_TYPES = [
   { type: 'taxi', label: 'Taxi' },
   { type: 'bus', label: 'Bus' },
@@ -10,6 +11,7 @@ const EVENT_TYPES = [
   { type: 'restaurant', label: 'Restaurant' },
 ];
 
+// Типы фильтров
 const FilterType = {
   EVERYTHING: 'everything',
   FUTURE: 'future',
@@ -17,6 +19,7 @@ const FilterType = {
   PAST: 'past'
 };
 
+// Типы сортировки
 const SortType = {
   DAY: 'day',
   EVENT: 'event',
@@ -25,12 +28,14 @@ const SortType = {
   OFFERS: 'offers'
 };
 
+// Действия пользователя
 const UserAction = {
   UPDATE_POINT: 'UPDATE_POINT',
   ADD_POINT: 'ADD_POINT',
   DELETE_POINT: 'DELETE_POINT',
 };
 
+// Типы обновлений
 const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',

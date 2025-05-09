@@ -1,6 +1,7 @@
 import AbstractView from '../framework/view/abstract-view.js';
 import { SortType } from '../const.js';
 
+// Функция создания шаблона сортировки
 function createSortTemplate(currentSortType) {
   return `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">
             <div class="trip-sort__item  trip-sort__item--day">
@@ -33,6 +34,7 @@ function createSortTemplate(currentSortType) {
           </form>`;
 }
 
+// Класс представления сортировки
 export default class SortView extends AbstractView {
   #currentSortType = null;
   #handleSortTypeChange = null;
@@ -42,13 +44,16 @@ export default class SortView extends AbstractView {
     this.#currentSortType = currentSortType;
     this.#handleSortTypeChange = onSortTypeChange;
 
+    // Добавление обработчика изменения типа сортировки
     this.element.addEventListener('click', this.#sortTypeChangeHandler);
   }
 
+  // Геттер для получения шаблона
   get template() {
     return createSortTemplate(this.#currentSortType);
   }
 
+  // Обработчик изменения типа сортировки
   #sortTypeChangeHandler = (evt) => {
     const sortButton = evt.target.closest('.trip-sort__btn');
     if (!sortButton) {

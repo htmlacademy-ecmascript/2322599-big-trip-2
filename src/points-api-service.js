@@ -28,7 +28,7 @@ export default class PointsApiService extends ApiService {
       });
   }
 
-  // Получение списка предложений
+  // Получение списка дополнительных опций
   get offers() {
     return this._load({ url: 'offers' })
       .then(ApiService.parseResponse)
@@ -83,7 +83,7 @@ export default class PointsApiService extends ApiService {
       'is_favorite': point.isFavorite,
     };
 
-    // Удаляем клиентские названия полей
+    // Удаление клиентских названий полей
     delete adaptedPoint.dateFrom;
     delete adaptedPoint.dateTo;
     delete adaptedPoint.basePrice;

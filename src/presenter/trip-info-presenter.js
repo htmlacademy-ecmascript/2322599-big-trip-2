@@ -1,6 +1,7 @@
 import TripInfoView from '../view/trip-info-view.js';
 import { render, remove } from '../framework/render.js';
 
+// Презентер информации о путешествии
 export default class TripInfoPresenter {
   #tripMainContainer = null;
   #pointsModel = null;
@@ -11,11 +12,13 @@ export default class TripInfoPresenter {
     this.#pointsModel = pointsModel;
   }
 
+  // Инициализация презентера
   init() {
     this.#pointsModel.addObserver(this.#handleModelEvent);
     this.#renderTripInfo();
   }
 
+  // Получение списка направлений
   #getDestinations() {
     const points = this.#pointsModel.points;
     const destinations = [];
@@ -30,6 +33,7 @@ export default class TripInfoPresenter {
     return destinations;
   }
 
+  // Получение дат начала и окончания путешествия
   #getDates() {
     const points = this.#pointsModel.points;
     if (points.length === 0) {
@@ -42,6 +46,7 @@ export default class TripInfoPresenter {
     };
   }
 
+  // Расчет общей стоимости путешествия
   #calculateTotalPrice() {
     const points = this.#pointsModel.points;
     let totalPrice = 0;
@@ -61,6 +66,7 @@ export default class TripInfoPresenter {
     return totalPrice;
   }
 
+  // Рендер информации о путешествии
   #renderTripInfo() {
     const points = this.#pointsModel.points;
     if (points.length === 0) {
@@ -73,12 +79,14 @@ export default class TripInfoPresenter {
 
     const prevTripInfoComponent = this.#tripInfoComponent;
 
+    // Создание нового компонента
     this.#tripInfoComponent = new TripInfoView({
       destinations: this.#getDestinations(),
       dates: this.#getDates(),
       totalPrice: this.#calculateTotalPrice()
     });
 
+    // Обновление или первый рендер
     if (prevTripInfoComponent) {
       remove(prevTripInfoComponent);
     }
@@ -86,6 +94,7 @@ export default class TripInfoPresenter {
     render(this.#tripInfoComponent, this.#tripMainContainer, 'afterbegin');
   }
 
+  // Обработчик событий модели
   #handleModelEvent = () => {
     this.#renderTripInfo();
   };
