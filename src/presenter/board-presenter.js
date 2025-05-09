@@ -175,7 +175,7 @@ export default class BoardPresenter {
       onSortTypeChange: this.#handleSortTypeChange
     });
 
-    render(this.#sortComponent, this.#eventListComponent.element, RenderPosition.AFTERBEGIN);
+    render(this.#sortComponent, this.#boardContainer, RenderPosition.AFTERBEGIN);
   }
 
   // Рендер одной точки маршрута
