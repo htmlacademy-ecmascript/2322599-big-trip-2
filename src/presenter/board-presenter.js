@@ -102,26 +102,32 @@ export default class BoardPresenter {
   #handleViewAction = async (actionType, updateType, update) => {
     this.#uiBlocker.block();
 
-    try {
-      switch (actionType) {
-        case UserAction.UPDATE_POINT:
-          this.#pointPresenters.get(update.id).setSaving();
+    switch (actionType) {
+      case UserAction.UPDATE_POINT:
+        this.#pointPresenters.get(update.id).setSaving();
+        try {
           await this.#pointsModel.updatePoint(updateType, update);
-          break;
-        case UserAction.ADD_POINT:
-          this.#newPointPresenter.setSaving();
+        } catch (error) {
+          this.#pointPresenters.get(update.id).setAborting();
+        }
+        break;
+      case UserAction.ADD_POINT:
+        this.#newPointPresenter.setSaving();
+        try {
           await this.#pointsModel.addPoint(updateType, update);
-          break;
-        case UserAction.DELETE_POINT:
-          this.#pointPresenters.get(update.id).setDeleting();
+        } catch (error) {
+          this.#newPointPresenter.setAborting();
+        }
+        break;
+      case UserAction.DELETE_POINT:
+        this.#pointPresenters.get(update.id).setDeleting();
+        try {
           await this.#pointsModel.deletePoint(updateType, update);
-          break;
-      }
-    } catch {
-      this.#pointPresenters.get(update.id)?.setAborting();
-      this.#newPointPresenter?.setAborting();
+        } catch (error) {
+          this.#pointPresenters.get(update.id).setAborting();
+        }
+        break;
     }
-
     this.#uiBlocker.unblock();
   };
 
