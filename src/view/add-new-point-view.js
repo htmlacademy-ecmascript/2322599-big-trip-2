@@ -6,7 +6,7 @@ import flatpickr from 'flatpickr';
 
 import 'flatpickr/dist/flatpickr.min.css';
 
-// Создание шаблона дополнительных опций (обновлено)
+// Создание шаблона дополнительных опций
 function createOffersTemplate(offersList, offers, isDisabled) {
   if (!offersList || !offersList.offers) {
     return '';
@@ -29,7 +29,7 @@ function createOffersTemplate(offersList, offers, isDisabled) {
   ).join('');
 }
 
-// Создание шаблона блока с опциями (обновлено)
+// Создание шаблона блока с опциями
 function createOfferDetailsTemplate(offersList, offers, isDisabled) {
   const offersMarkup = createOffersTemplate(offersList, offers, isDisabled);
 
@@ -290,7 +290,7 @@ export default class AddNewPointView extends AbstractStatefulView {
     }
   };
 
-  // Обработчик изменения опций (обновлено)
+  // Обработчик изменения опций
   #offersChangeHandler = (evt) => {
     evt.preventDefault();
     if (!evt.target.classList.contains('event__offer-checkbox')) {

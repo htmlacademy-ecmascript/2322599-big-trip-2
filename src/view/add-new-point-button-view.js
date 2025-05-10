@@ -8,12 +8,12 @@ function createNewPointButtonTemplate() {
 
 // Класс представления кнопки добавления новой точки
 export default class AddNewPointButtonView extends AbstractView {
-  #handleClick = null; // Обработчик клика
+  #handleClick = null;
 
   constructor({ onClick }) {
     super();
     this.#handleClick = onClick;
-    // Добавление обработчика клика на элемент
+
     this.element.addEventListener('click', this.#clickHandler);
   }
 

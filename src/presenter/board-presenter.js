@@ -80,6 +80,15 @@ export default class BoardPresenter {
     if (this.#addNewPointButtonComponent) {
       this.#addNewPointButtonComponent.element.disabled = false;
     }
+
+    if (this.#noPointComponent) {
+      remove(this.#noPointComponent);
+      this.#noPointComponent = null;
+    }
+
+    if (this.#pointsModel.points.length === 0) {
+      this.#renderNoPoints();
+    }
   };
 
   // Создание новой точки
@@ -90,6 +99,11 @@ export default class BoardPresenter {
 
     if (this.#addNewPointButtonComponent) {
       this.#addNewPointButtonComponent.element.disabled = true;
+    }
+
+    if (this.#noPointComponent) {
+      remove(this.#noPointComponent);
+      this.#noPointComponent = null;
     }
   }
 

@@ -44,7 +44,6 @@ export default class SortView extends AbstractView {
     this.#currentSortType = currentSortType;
     this.#handleSortTypeChange = onSortTypeChange;
 
-    // Добавление обработчика изменения типа сортировки
     this.element.addEventListener('click', this.#sortTypeChangeHandler);
   }
 

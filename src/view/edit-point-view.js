@@ -6,7 +6,7 @@ import flatpickr from 'flatpickr';
 
 import 'flatpickr/dist/flatpickr.min.css';
 
-// Создание шаблона опций (обновлено)
+// Создание шаблона опций
 function createOffersTemplate(offersList, offers, isDisabled) {
   if (!offersList || !offersList.offers) {
     return '';
@@ -29,7 +29,7 @@ function createOffersTemplate(offersList, offers, isDisabled) {
   ).join('');
 }
 
-// Создание шаблона блока с опциями (обновлено)
+// Создание шаблона блока с опциями
 function createOfferDetailsTemplate(offersList, offers, isDisabled) {
   const offersMarkup = createOffersTemplate(offersList, offers, isDisabled);
 
@@ -203,7 +203,6 @@ export default class EditPointView extends AbstractStatefulView {
     this.element.querySelector('.event__reset-btn').addEventListener('click', this.#formDeleteClickHandler);
     this.element.querySelector('.event__input--price').addEventListener('change', this.#priceChangeHandler);
 
-    // Обновленный обработчик для офферсов
     const offersContainer = this.element.querySelector('.event__available-offers');
     if (offersContainer) {
       offersContainer.addEventListener('change', this.#offersChangeHandler);
@@ -310,7 +309,7 @@ export default class EditPointView extends AbstractStatefulView {
     }
   };
 
-  // Обработчик изменения опций (обновлено)
+  // Обработчик изменения опций
   #offersChangeHandler = (evt) => {
     evt.preventDefault();
     if (!evt.target.classList.contains('event__offer-checkbox')) {
