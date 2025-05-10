@@ -80,6 +80,15 @@ export default class BoardPresenter {
     if (this.#addNewPointButtonComponent) {
       this.#addNewPointButtonComponent.element.disabled = false;
     }
+
+    if (this.#noPointComponent) {
+      remove(this.#noPointComponent);
+      this.#noPointComponent = null;
+    }
+
+    if (this.#pointsModel.points.length === 0) {
+      this.#renderNoPoints();
+    }
   };
 
   // Создание новой точки
@@ -90,6 +99,11 @@ export default class BoardPresenter {
 
     if (this.#addNewPointButtonComponent) {
       this.#addNewPointButtonComponent.element.disabled = true;
+    }
+
+    if (this.#noPointComponent) {
+      remove(this.#noPointComponent);
+      this.#noPointComponent = null;
     }
   }
 
@@ -102,26 +116,32 @@ export default class BoardPresenter {
   #handleViewAction = async (actionType, updateType, update) => {
     this.#uiBlocker.block();
 
-    try {
-      switch (actionType) {
-        case UserAction.UPDATE_POINT:
-          this.#pointPresenters.get(update.id).setSaving();
+    switch (actionType) {
+      case UserAction.UPDATE_POINT:
+        this.#pointPresenters.get(update.id).setSaving();
+        try {
           await this.#pointsModel.updatePoint(updateType, update);
-          break;
-        case UserAction.ADD_POINT:
-          this.#newPointPresenter.setSaving();
+        } catch (error) {
+          this.#pointPresenters.get(update.id).setAborting();
+        }
+        break;
+      case UserAction.ADD_POINT:
+        this.#newPointPresenter.setSaving();
+        try {
           await this.#pointsModel.addPoint(updateType, update);
-          break;
-        case UserAction.DELETE_POINT:
-          this.#pointPresenters.get(update.id).setDeleting();
+        } catch (error) {
+          this.#newPointPresenter.setAborting();
+        }
+        break;
+      case UserAction.DELETE_POINT:
+        this.#pointPresenters.get(update.id).setDeleting();
+        try {
           await this.#pointsModel.deletePoint(updateType, update);
-          break;
-      }
-    } catch {
-      this.#pointPresenters.get(update.id)?.setAborting();
-      this.#newPointPresenter?.setAborting();
+        } catch (error) {
+          this.#pointPresenters.get(update.id).setAborting();
+        }
+        break;
     }
-
     this.#uiBlocker.unblock();
   };
 
@@ -175,7 +195,7 @@ export default class BoardPresenter {
       onSortTypeChange: this.#handleSortTypeChange
     });
 
-    render(this.#sortComponent, this.#eventListComponent.element, RenderPosition.AFTERBEGIN);
+    render(this.#sortComponent, this.#boardContainer, RenderPosition.AFTERBEGIN);
   }
 
   // Рендер одной точки маршрута

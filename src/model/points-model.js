@@ -41,7 +41,6 @@ export default class PointsModel extends Observable {
   // Инициализация модели
   async init() {
     try {
-      // Параллельная загрузка точек, направлений и дополнительных опций
       const pointsPromise = this.#pointsApiService.points;
       const destinationsPromise = this.#pointsApiService.destinations;
       const offersPromise = this.#pointsApiService.offers;
@@ -52,13 +51,12 @@ export default class PointsModel extends Observable {
         offersPromise
       ]);
 
-      // Адаптация данных и уведомление об успешной загрузке
       this.#points = points.map(this.#adaptToClient);
       this.#destinations = destinations;
       this.#offers = offers;
       this._notify(UpdateType.INIT);
     } catch (err) {
-      // Очистка данных и уведомление об ошибке
+
       this.#points = [];
       this.#destinations = [];
       this.#offers = [];
@@ -75,7 +73,6 @@ export default class PointsModel extends Observable {
     }
 
     try {
-      // Обновление на сервере и в локальном хранилище
       const response = await this.#pointsApiService.updatePoint(update);
       const updatedPoint = this.#adaptToClient(response);
 
